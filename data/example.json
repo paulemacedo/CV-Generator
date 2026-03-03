@@ -1,0 +1,200 @@
+{
+  "nome": "John Doe",
+
+  "location": {
+    "pt": "São Paulo, SP — Brasil",
+    "en": "São Paulo, SP — Brazil"
+  },
+
+  "headline": {
+    "pt": "Disponível para Oportunidades Remotas",
+    "en": "Open to Remote Opportunities"
+  },
+
+  "contact": {
+    "linkedin": "https://linkedin.com/in/johndoe",
+    "website": "https://johndoe.com",
+    "email": "johndoe@example.com",
+    "github": "https://github.com/johndoe",
+    "phone": "+55 11 91234-5678"
+  },
+
+  "labels": {
+    "pt": {
+      "skills": "Habilidades",
+      "experience": "Experiência",
+      "education": "Educação",
+      "projects": "Projetos",
+      "certifications": "Certificações",
+      "publications": "Publicações"
+    },
+    "en": {
+      "skills": "Skills",
+      "experience": "Experience",
+      "education": "Education",
+      "projects": "Projects",
+      "certifications": "Certifications",
+      "publications": "Publications"
+    }
+  },
+
+  "skills": [
+    {
+      "id": "security",
+      "label": {
+        "pt": "Segurança e Normas",
+        "en": "Security & Standards"
+      },
+      "items": [
+        "Cybersecurity",
+        "Application Security",
+        "ISO 27001",
+        "GDPR"
+      ],
+      "priority": 1
+    },
+    {
+      "id": "systems",
+      "label": {
+        "pt": "Sistemas e Redes",
+        "en": "Systems & Networking"
+      },
+      "items": [
+        "Linux",
+        "Networking Fundamentals",
+        "TCP/IP",
+        "DNS"
+      ],
+      "priority": 2
+    },
+    {
+      "id": "programming",
+      "label": {
+        "pt": "Programação e Scripting",
+        "en": "Programming & Scripting"
+      },
+      "items": [
+        "Python",
+        "JavaScript",
+        "SQL"
+      ],
+      "priority": 3
+    }
+  ],
+
+  "experience": [
+    {
+      "role": {
+        "pt": "Desenvolvedor de Software",
+        "en": "Software Developer"
+      },
+      "company": "TechCorp",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "pt": "Jan 2022 – Dez 2023",
+        "en": "Jan 2022 – Dec 2023"
+      },
+      "bullets": {
+        "pt": [
+          "Desenvolvi aplicações web escaláveis...",
+          "Implementei soluções de segurança para APIs..."
+        ],
+        "en": [
+          "Developed scalable web applications...",
+          "Implemented security solutions for APIs..."
+        ]
+      }
+    },
+    {
+      "role": {
+        "pt": "Analista de Dados",
+        "en": "Data Analyst"
+      },
+      "company": "DataCorp",
+      "location": "Rio de Janeiro, RJ, BR",
+      "date": {
+        "pt": "Fev 2020 – Dez 2021",
+        "en": "Feb 2020 – Dec 2021"
+      },
+      "bullets": {
+        "pt": [
+          "Analisei grandes volumes de dados para insights estratégicos...",
+          "Automatizei relatórios usando Python e SQL..."
+        ],
+        "en": [
+          "Analyzed large datasets for strategic insights...",
+          "Automated reports using Python and SQL..."
+        ]
+      }
+    }
+  ],
+
+  "education": [
+    {
+      "degree": {
+        "pt": "Bacharelado em Ciência da Computação",
+        "en": "Bachelor's in Computer Science"
+      },
+      "institution": "Universidade de São Paulo",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "pt": "2016 – 2020",
+        "en": "2016 – 2020"
+      },
+      "details": {
+        "pt": [
+          "Monitor em Algoritmos e Estruturas de Dados.",
+          "Projeto de pesquisa em aprendizado de máquina."
+        ],
+        "en": [
+          "Teaching assistant for Algorithms and Data Structures.",
+          "Research project in machine learning."
+        ]
+      }
+    }
+  ],
+
+  "projects": {
+    "pt": [
+      "TaskManager: Aplicação para gerenciar tarefas com React e Node.js.",
+      "DataAnalyzer: Ferramenta Python para análise de dados.",
+      "WeatherApp: Aplicativo de previsão do tempo com API aberta."
+    ],
+    "en": [
+      "TaskManager: Task management app using React and Node.js.",
+      "DataAnalyzer: Python tool for data analysis.",
+      "WeatherApp: Weather forecasting app using open API."
+    ]
+  },
+
+  "certifications": {
+    "pt": [
+      "Certificação AWS Solutions Architect.",
+      "Certificação Cisco CCNA."
+    ],
+    "en": [
+      "AWS Solutions Architect Certification.",
+      "Cisco CCNA Certification."
+    ]
+  },
+
+  "publications": [
+    {
+      "title": {
+        "pt": "Análise de Dados em Tempo Real",
+        "en": "Real-Time Data Analysis"
+      },
+      "date": "2021",
+      "details": {
+        "pt": [
+          "Publicado na conferência XYZ.",
+          "Coautoria com Dr. Fulano."
+        ],
+        "en": [
+          "Published in XYZ conference.",
+          "Co-authored with Dr. John Smith."
+        ]
+      }
+    }
+  ]
+}

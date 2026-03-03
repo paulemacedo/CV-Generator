@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>{{ nome }} - CV</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Ivory.css"> <!-- Link to external CSS file -->
+
+<style>
+/* Removed inline styles, moved to styles.css */
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <h1>{{ nome }}</h1>
+    <div class="subtitle">{{ headline }}</div>
+  </div>
+  <div class="header-right">
+    <div class="subtitle">{{ location }}</div>
+    <div class="contact">{{ contact_line }}</div>
+  </div>
+</header>
+
+<!-- SKILLS -->
+<section class="section">
+  <div class="section-title">{{ labels.skills }}</div>
+  <div class="skills-grid">
+    {% for core in skills %}
+    <div class="skill-core">
+      <strong>{{ core.label[lang] }}</strong>
+      <span>{{ core["items"] | join(" · ") }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="section">
+  <div class="section-title">{{ labels.experience }}</div>
+
+  {% for exp in experience %}
+  <div class="entry">
+    <div class="entry-header">
+      <div>
+        <div class="entry-title">{{ exp.role }}</div>
+        <div class="entry-sub">{{ exp.company }} — {{ exp.location }}</div>
+      </div>
+      <div class="entry-meta">{{ exp.date }}</div>
+    </div>
+    <ul>
+      {% for bullet in exp.bullets %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+<!-- EDUCATION -->
+<section class="section">
+  <div class="section-title">{{ labels.education }}</div>
+
+  {% for edu in education %}
+  <div class="entry">
+    <div class="entry-header">
+      <div>
+        <div class="entry-title">{{ edu.degree }}</div>
+        <div class="entry-sub">{{ edu.institution }} — {{ edu.location }}</div>
+      </div>
+      <div class="entry-meta">{{ edu.date }}</div>
+    </div>
+    {% if edu.details %}
+    <ul>
+      {% for d in edu.details %}
+      <li>{{ d }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+
+<!-- PROJECTS -->
+<section class="section">
+  <div class="section-title">{{ labels.projects }}</div>
+  <ul>
+    {% for project in projects %}
+    <li>{{ project }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section class="section">
+  <div class="section-title">{{ labels.certifications }}</div>
+  <ul>
+    {% for cert in certifications %}
+    <li>{{ cert }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<!-- PUBLICATIONS -->
+<section class="section">
+  <div class="section-title">{{ labels.publications }}</div>
+
+  {% for pub in publications %}
+  <div class="entry">
+    <div class="entry-header">
+      <div class="entry-title">{{ pub.title }}</div>
+      <div class="entry-meta">{{ pub.date }}</div>
+    </div>
+    <ul>
+      {% for bullet in pub.details %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>{{ nome }} - CV</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="Paule.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>{{ nome }}</h1>
+  <div class="header-sub">{{ location }} | {{ headline }}</div>
+  <div class="contact">
+    <a href="{{ contact.linkedin }}">LinkedIn</a> |
+    {{ contact.phone }} |
+    <a href="{{ contact.website }}">{{ contact.website | replace("https://", "") }}</a> |
+    <a href="mailto:{{ contact.email }}">{{ contact.email }}</a> |
+    <a href="{{ contact.github }}">GitHub</a>
+  </div>
+</header>
+
+<!-- SKILLS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.skills }}</span>
+    <div class="section-line"></div>
+  </div>
+  {% for core in skills %}
+  <div class="skill-row">
+    <strong>{{ core.label[lang] }}:</strong> {{ core["items"] | join(" | ") }}
+  </div>
+  {% endfor %}
+</section>
+
+<!-- EXPERIENCE -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.experience }}</span>
+    <div class="section-line"></div>
+  </div>
+  {% for exp in experience %}
+  <div class="entry">
+    <div class="entry-row">
+      <span class="entry-role">{{ exp.role }}</span>
+      <span class="entry-company">{{ exp.company }}</span>
+      <span class="entry-location">{{ exp.location }}</span>
+      <span class="entry-date">{{ exp.date }}</span>
+    </div>
+    <ul>
+      {% for bullet in exp.bullets %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+<!-- EDUCATION -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.education }}</span>
+    <div class="section-line"></div>
+  </div>
+  {% for edu in education %}
+  <div class="entry">
+    <div class="entry-row">
+      <span class="entry-role">{{ edu.degree }}</span>
+      <span class="entry-company">{{ edu.institution }}</span>
+      <span class="entry-location">{{ edu.location }}</span>
+      <span class="entry-date">{{ edu.date }}</span>
+    </div>
+    {% if edu.details %}
+    <ul>
+      {% for d in edu.details %}
+      <li>{{ d }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+
+<!-- PROJECTS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.projects }}</span>
+    <div class="section-line"></div>
+  </div>
+  <ul>
+    {% for project in projects %}
+    <li>{{ project }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.certifications }}</span>
+    <div class="section-line"></div>
+  </div>
+  <ul>
+    {% for cert in certifications %}
+    <li>{{ cert }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<!-- PUBLICATIONS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-title">{{ labels.publications }}</span>
+    <div class="section-line"></div>
+  </div>
+  {% for pub in publications %}
+  <div class="entry">
+    <div class="entry-row">
+      <span class="entry-role">{{ pub.title }}</span>
+      <span class="entry-date">{{ pub.date }}</span>
+    </div>
+    <ul>
+      {% for bullet in pub.details %}
+      <li>{{ bullet }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</section>
+
+</body>
+</html>
