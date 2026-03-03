@@ -1,2 +1,2 @@
 # Ignore private data files
-/data/Paule-*.json
+/data/#*.json
