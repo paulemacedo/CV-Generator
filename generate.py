@@ -121,4 +121,5 @@ for input_file in data_files:
             with open(out_path_html, "w", encoding="utf-8") as f:
                 f.write(html)
 
+            # Removendo qualquer referência ao PDF
             print(f"CV gerado: {out_path_html}")

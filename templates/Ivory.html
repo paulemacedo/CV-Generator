@@ -21,11 +21,15 @@
   <div class="header-right">
     <div class="subtitle">{{ location }}</div>
     <div class="contact">
-      <a href="{{ contact.linkedin }}">LinkedIn</a> |
-      {{ contact.phone }} |
-      <a href="{{ contact.website }}">{{ contact.website | replace("https://", "") }}</a> |
-      <a href="mailto:{{ contact.email }}">{{ contact.email }}</a> |
-      <a href="{{ contact.github }}">GitHub</a>
+      <span>
+        <a href="{{ contact.linkedin }}">LinkedIn</a> |
+        <a href="{{ contact.website }}">Portifolio</a> |
+        <a href="{{ contact.github }}">GitHub</a>
+      </span>
+      <span>
+        <a href="mailto:{{ contact.email }}">{{ contact.email }}</a> |
+        {{ contact.phone }}
+      </span>
     </div>
   </div>
 </header>

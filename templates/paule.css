@@ -7,14 +7,19 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+@page {
+  size: A4;
+  margin: 0mm 0mm; /* Ajusta margens para A4 com menos espaço lateral */
+}
+
 body {
   font-family: 'Nunito', Arial, sans-serif;
   font-weight: 400;
   color: var(--ink);
   background: #fff;
-  max-width: 820px;
+  max-width: 770px; /* Ajusta largura máxima para compensar margens do navegador */
   margin: 0 auto;
-  padding: 44px 56px 56px;
+  padding: 20px 20px 20px; /* Ajusta padding para evitar excesso de espaço */
   font-size: 13px;
   line-height: 1.5;
 }
@@ -53,6 +58,26 @@ h1 {
 /* ── SECTION ── */
 
 .section { margin-bottom: 16px; }
+
+/* Ajustes para evitar página em branco no final */
+@media print {
+  .section:last-of-type {
+    margin-bottom: 0; /* Remove margem inferior da última seção */
+    page-break-after: avoid; /* Evita quebra de página após a última seção */
+  }
+
+  .entry:last-of-type {
+    margin-bottom: 0; /* Remove margem inferior da última entrada */
+  }
+
+  ul:last-of-type {
+    margin-bottom: 0; /* Remove margem inferior da última lista */
+  }
+
+  body {
+    padding-bottom: 0; /* Remove padding inferior do body */
+  }
+}
 
 .section-header {
   display: flex;
