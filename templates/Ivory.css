@@ -220,7 +220,7 @@ ul:last-of-type {
 @media print {
   body {
     background: white;
-    padding: 40px 52px 20px; /* Reduzindo o padding inferior */
+    padding: 0px 0px;
   }
 
   .entry:hover {

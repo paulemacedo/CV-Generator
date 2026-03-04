@@ -27,13 +27,15 @@ body {
 /* ── HEADER ── */
 
 header {
+  
   text-align: center;
   margin-bottom: 18px;
+  font-family: 'Spectral', serif; /* Alterado para a fonte Spectral */
 }
 
 h1 {
-  font-family: 'Nunito', Arial, sans-serif;
-  font-weight: 700;
+  font-family: 'Spectral', serif; /* Alterado para a fonte Spectral */
+  font-weight: 500; /* Ajustado para Medium */
   font-size: 26px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
@@ -43,13 +45,11 @@ h1 {
 
 .header-sub {
   font-size: 12.5px;
-  color: var(--ink);
   margin-bottom: 5px;
 }
 
 .contact {
   font-size: 12.5px;
-  color: var(--blue);
 }
 
 .contact a { color: var(--blue); text-decoration: none; }
@@ -60,22 +60,23 @@ h1 {
 .section { margin-bottom: 16px; }
 
 /* Ajustes para evitar página em branco no final */
+/* PRINT */
 @media print {
+  body {
+    background: white;
+    padding: 0px 0px;
+  }
+
+  .entry:hover {
+    border-left-color: var(--rule);
+  }
+
   .section:last-of-type {
     margin-bottom: 0; /* Remove margem inferior da última seção */
-    page-break-after: avoid; /* Evita quebra de página após a última seção */
   }
 
   .entry:last-of-type {
     margin-bottom: 0; /* Remove margem inferior da última entrada */
-  }
-
-  ul:last-of-type {
-    margin-bottom: 0; /* Remove margem inferior da última lista */
-  }
-
-  body {
-    padding-bottom: 0; /* Remove padding inferior do body */
   }
 }
 
