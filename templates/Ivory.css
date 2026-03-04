@@ -13,11 +13,6 @@
   padding: 0;
 }
 
-@page {
-  size: A4;
-  margin: 20mm 10mm; /* Ajusta margens para A4 com menos espaço lateral */
-}
-
 body {
   font-family: 'DM Sans', sans-serif;
   font-weight: 300;

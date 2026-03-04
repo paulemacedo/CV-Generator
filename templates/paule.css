@@ -7,10 +7,6 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-@page {
-  size: A4;
-  margin: 0mm 0mm; /* Ajusta margens para A4 com menos espaço lateral */
-}
 
 body {
   font-family: 'Nunito', Arial, sans-serif;
@@ -27,7 +23,6 @@ body {
 /* ── HEADER ── */
 
 header {
-  
   text-align: center;
   margin-bottom: 18px;
   font-family: 'Spectral', serif; /* Alterado para a fonte Spectral */
