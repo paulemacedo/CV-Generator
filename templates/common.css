@@ -1,0 +1,32 @@
+/* Common styles for all templates */
+@page {
+  size: A4;
+  margin: 10mm 0mm; /* Ajusta margens para A4 com menos espaço lateral */
+}
+
+/* Print-specific styles */
+@media print {
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    
+    .section:last-of-type {
+      margin-bottom: 0; /* Remove margem inferior da última seção */
+    }
+
+    .entry:last-of-type {
+      margin-bottom: 0; /* Remove margem inferior da última entrada */
+    }
+
+      .entry:hover {
+    border-left-color: var(--rule);
+  }
+
+    /* Hide elements not needed for printing */
+    .no-print {
+        display: none;
+    }
+    
+}

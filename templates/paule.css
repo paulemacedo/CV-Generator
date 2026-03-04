@@ -1,3 +1,5 @@
+@import url("common.css");
+
 :root {
   --ink:   #0f0f0f;
   --blue:  #1155cc;
@@ -53,27 +55,6 @@ h1 {
 /* ── SECTION ── */
 
 .section { margin-bottom: 16px; }
-
-/* Ajustes para evitar página em branco no final */
-/* PRINT */
-@media print {
-  body {
-    background: white;
-    padding: 0px 0px;
-  }
-
-  .entry:hover {
-    border-left-color: var(--rule);
-  }
-
-  .section:last-of-type {
-    margin-bottom: 0; /* Remove margem inferior da última seção */
-  }
-
-  .entry:last-of-type {
-    margin-bottom: 0; /* Remove margem inferior da última entrada */
-  }
-}
 
 .section-header {
   display: flex;
@@ -149,7 +130,3 @@ li em     { font-style: italic; }
 
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
-
-@media print {
-  body { padding: 32px 44px; }
-}

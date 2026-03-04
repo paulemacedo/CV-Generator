@@ -210,23 +210,3 @@ ul:last-of-type {
 .entry:last-of-type {
   margin-bottom: 0; /* Remove margem inferior da última entrada */
 }
-
-/* PRINT */
-@media print {
-  body {
-    background: white;
-    padding: 0px 0px;
-  }
-
-  .entry:hover {
-    border-left-color: var(--rule);
-  }
-
-  .section:last-of-type {
-    margin-bottom: 0; /* Remove margem inferior da última seção */
-  }
-
-  .entry:last-of-type {
-    margin-bottom: 0; /* Remove margem inferior da última entrada */
-  }
-}
