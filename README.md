@@ -9,7 +9,7 @@ Certifique-se de ter o seguinte instalado em sua máquina:
 ## Instalação
 1. Clone este repositório para sua máquina local:
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone https://github.com/paulemacedo/CV-Generator.git
    ```
 2. Navegue até o diretório do projeto:
    ```bash
