@@ -38,24 +38,13 @@ Certifique-se de ter o seguinte instalado em sua máquina:
 1. Prepare os dados de entrada:
    - Edite ou crie um arquivo JSON no diretório `data/` com as informações necessárias para o currículo. Veja o exemplo em `data/example.json`.
 
-2. Execute o script para gerar os currículos:
+2. Execute o script para gerar todos os currículos:
    ```bash
-   python generate.py <idioma> <nome>
+   python generate.py
    ```
-   - `<idioma>`: O idioma do currículo (por exemplo, `en` para inglês ou `pt` para português).
-   - `<nome>`: O nome do conjunto de dados no arquivo JSON (por exemplo, `paule` ou `ivory`).
+   - O script agora gera automaticamente todos os currículos para todos os idiomas e templates disponíveis.
 
-   Exemplo:
-   ```bash
-   python generate.py en paule
-   ```
-
-3. Para gerar todos os currículos para todos os idiomas e conjuntos de dados:
-   ```bash
-   python generate.py all all
-   ```
-
-4. Os currículos gerados serão salvos no diretório `output/`.
+3. Os currículos gerados serão salvos no diretório `output/`.
 
 ## Personalização
 

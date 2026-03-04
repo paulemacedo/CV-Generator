@@ -4,14 +4,6 @@ import os
 from jinja2 import Environment, FileSystemLoader
 import glob
 
-# -------- CONFIG --------
-# Usage: python generate.py [lang] [template]
-# Examples:
-#   python generate.py              -> all langs, default template (ivory)
-#   python generate.py en           -> en only, default template (ivory)
-#   python generate.py en ivory     -> en only, ivory template
-#   python generate.py all minimal  -> all langs, minimal template
-
 AVAILABLE_TEMPLATES = ["ivory", "paule"]  # add more template names here as you create them
 DEFAULT_TEMPLATE    = "ivory"
 
@@ -39,6 +31,9 @@ for input_file in data_files:
 
     # Ensure the environment is defined before use
     env = Environment(loader=FileSystemLoader("templates"))
+
+    # Always generate for all templates
+    templates = AVAILABLE_TEMPLATES
 
     for template_name in templates:
         template = env.get_template(f"{template_name}.html")
@@ -86,30 +81,44 @@ for input_file in data_files:
                         "details": pub.get("details", {}).get(LANG, [])
                     })
 
+            # -------- PREPARE SKILLS --------
+            skills = perfil["skills"]
+            # Preprocess skills to ensure consistent 'items' key
+            processed_skills = []
+            for skill in skills:
+                if "items" not in skill:
+                    skill["items"] = skill.get(f"items_{LANG}", [])
+                processed_skills.append(skill)
+
             # -------- RENDER --------
-            html = template.render(
-                lang=LANG,
-                nome=perfil["nome"],
-                location=perfil["location"][LANG],
-                headline=perfil["headline"][LANG],
-                contact=contact,  # Pass the contact dictionary
-                contact_line=contact_line,
-                skills=sorted(perfil["skills"], key=lambda x: x["priority"]),
-                experience=experience,
-                projects=perfil["projects"][LANG],
-                education=education,
-                certifications=certifications,
-                publications=publications,
-                labels=labels
-            )
+            try:
+                html = template.render(
+                    lang=LANG,
+                    nome=perfil["nome"],
+                    location=perfil["location"][LANG],
+                    headline=perfil["headline"][LANG],
+                    contact=contact,  # Pass the contact dictionary
+                    contact_line=contact_line,
+                    skills=sorted(processed_skills, key=lambda x: x["priority"]),
+                    experience=experience,
+                    projects=perfil["projects"][LANG],
+                    education=education,
+                    certifications=certifications,
+                    publications=publications,
+                    labels=labels
+                )
+            except Exception as e:
+                print("Error during rendering:", e)
+                print("Debugging skills data:", sorted(perfil["skills"], key=lambda x: x["priority"]))
+                raise
 
             # -------- SAVE OUTPUT --------
             job_name = os.path.splitext(os.path.basename(input_file))[0]  # Extract job name from input file
             output_dir = os.path.join("output", job_name, template_name)
             os.makedirs(output_dir, exist_ok=True)  # Create directories if they don't exist
 
-            out_path = os.path.join(output_dir, f"cv_{LANG}.html")
-            with open(out_path, "w", encoding="utf-8") as f:
+            out_path_html = os.path.join(output_dir, f"cv_{LANG}.html")
+            with open(out_path_html, "w", encoding="utf-8") as f:
                 f.write(html)
 
-            print(f"CV gerado: {out_path}")
+            print(f"CV gerado: {out_path_html}")

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>{{ nome }} - CV</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="Ivory.css"> <!-- Link to external CSS file -->
+<link rel="stylesheet" href="../../../templates/Ivory.css"> <!-- Updated to relative path -->
 
 <style>
 /* Removed inline styles, moved to styles.css */
@@ -20,7 +20,13 @@
   </div>
   <div class="header-right">
     <div class="subtitle">{{ location }}</div>
-    <div class="contact">{{ contact_line }}</div>
+    <div class="contact">
+      <a href="{{ contact.linkedin }}">LinkedIn</a> |
+      {{ contact.phone }} |
+      <a href="{{ contact.website }}">{{ contact.website | replace("https://", "") }}</a> |
+      <a href="mailto:{{ contact.email }}">{{ contact.email }}</a> |
+      <a href="{{ contact.github }}">GitHub</a>
+    </div>
   </div>
 </header>
 
