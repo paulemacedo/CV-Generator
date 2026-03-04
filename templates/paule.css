@@ -18,7 +18,7 @@ body {
   max-width: 770px; /* Ajusta largura máxima para compensar margens do navegador */
   margin: 0 auto;
   padding: 20px 20px 20px; /* Ajusta padding para evitar excesso de espaço */
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -91,9 +91,9 @@ h1 {
 .entry { margin-bottom: 6px; }
 
 .entry-row {
-  display: flex;
+  display:flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 20px;
   flex-wrap: wrap;
   margin-bottom: 3px;
 }
