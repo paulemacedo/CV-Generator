@@ -300,6 +300,7 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
     profile = load_json_file(profile_path)
     labels_by_language = profile.get("labels", DEFAULT_LABELS)
     environment = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+    profile_name = profile_path.stem.lstrip("-_") or profile_path.stem
 
     for template_name in template_names:
         template = environment.get_template(f"{template_name}.html")
@@ -307,15 +308,15 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
         for language in languages:
             html = render_profile(template, profile, language, labels_by_language[language])
 
-            output_directory = OUTPUT_DIR / profile_path.stem / template_name
+            output_directory = OUTPUT_DIR / profile_name / language / template_name
             output_directory.mkdir(parents=True, exist_ok=True)
 
-            html_path = output_directory / f"cv_{language}.html"
+            html_path = output_directory / "cv.html"
             html_path.write_text(html, encoding="utf-8")
             print(f"CV gerado:  {html_path.relative_to(WORKSPACE_ROOT)}")
 
             if PDF_ENABLED:
-                pdf_path = output_directory / f"cv_{language}.pdf"
+                pdf_path = output_directory / "cv.pdf"
                 try:
                     generate_pdf(html_path, pdf_path)
                     print(f"PDF gerado: {pdf_path.relative_to(WORKSPACE_ROOT)}")
