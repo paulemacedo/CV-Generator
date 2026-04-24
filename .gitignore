@@ -1,9 +1,11 @@
-# Generated CV data and output
-/data/*.json
-!/data/example.json
+# Project output
 /output
 
-# Python caches and virtual environments
+# CV input data
+/data/*.json
+!/data/example.json
+
+# Python cache and virtual environments
 __pycache__/
 *.pyc
 .venv/
@@ -14,6 +16,5 @@ venv/
 .coverage
 htmlcov/
 
-
-#
+# Editor settings
 .vscode/
