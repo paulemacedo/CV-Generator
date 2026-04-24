@@ -244,25 +244,32 @@ def prepare_publications(profile: dict[str, Any], language: str) -> list[dict[st
 
         title = normalize_language_value(publication.get("title", ""), language)
         details = normalize_text_list(publication.get("details", []), language)
+        description_text = normalize_language_value(publication.get("description", ""), language)
 
         if not details:
-            description = normalize_language_value(publication.get("description", ""), language)
-            details = split_description_into_bullets(description)
+            details = split_description_into_bullets(description_text)
 
         venue = normalize_language_value(publication.get("venue", ""), language).strip()
         doi = str(publication.get("doi", "")).strip()
-        if doi:
-            details.append(f"DOI: {doi}.")
+        doi_url = str(publication.get("doi_url", "")).strip()
+        if not doi_url and doi:
+            doi_url = f"https://doi.org/{doi}"
+
+        # If details were generated from description, keep only one representation.
+        has_explicit_details = bool(normalize_text_list(publication.get("details", []), language))
+        localized_description = localize_map(publication.get("description", ""), language)
+        if not has_explicit_details and details:
+            localized_description = {"pt": "", "en": ""}
 
         publication_items.append(
             {
                 "title": localize_map(publication.get("title", ""), language),
                 "venue": venue,
                 "date": localize_map(publication.get("date", ""), language),
-                "description": localize_map(publication.get("description", ""), language),
+                "description": localized_description,
                 "details": details,
                 "doi": doi,
-                "doi_url": str(publication.get("doi_url", "")).strip(),
+                "doi_url": doi_url,
             }
         )
 

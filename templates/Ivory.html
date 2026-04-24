@@ -140,8 +140,9 @@
       <div class="entry-sub">{{ pub.venue }}</div>
       <div class="entry-meta">{{ pub.date[lang] if pub.date is mapping else pub.date }}</div>
     </div>
-    {% if pub.description %}
-      <div>{{ pub.description[lang] if pub.description is mapping else pub.description }}</div>
+    {% set pub_description = pub.description[lang] if pub.description is mapping else pub.description %}
+    {% if pub_description %}
+      <div>{{ pub_description }}</div>
     {% endif %}
     {% if pub.details %}
     <ul>
@@ -150,7 +151,7 @@
       {% endfor %}
     </ul>
     {% endif %}
-    {% if pub.doi %}<div>DOI: {{ pub.doi }}</div>{% endif %}
+    {% if pub.doi %}<div>DOI: <a href="{{ pub.doi_url }}" target="_blank" rel="noopener noreferrer">{{ pub.doi }}</a></div>{% endif %}
   </div>
   {% endfor %}
 </section>

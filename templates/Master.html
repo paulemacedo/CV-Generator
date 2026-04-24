@@ -132,7 +132,8 @@
             <div style="margin-bottom:1em;">
                 <span class="label">{{ pub.title[lang] if pub.title is mapping else pub.title }}</span> — {{ pub.venue }}<br>
                 <span class="subtle">{{ pub.date[lang] if pub.date is mapping else pub.date }}</span><br>
-                {% if pub.description %}<span>{{ pub.description[lang] if pub.description is mapping else pub.description }}</span><br>{% endif %}
+                {% set pub_description = pub.description[lang] if pub.description is mapping else pub.description %}
+                {% if pub_description %}<span>{{ pub_description }}</span><br>{% endif %}
                 {% if pub.doi_url %}<span class="subtle">DOI: <a href="{{ pub.doi_url }}">{{ pub.doi }}</a></span>{% endif %}
             </div>
         {% endfor %}
