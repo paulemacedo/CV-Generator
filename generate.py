@@ -1,280 +1,339 @@
-import json
-import sys
-import os
-from jinja2 import Environment, FileSystemLoader
-import glob
+# =============================================================================
+# Module   : generate.py
+# Project  : CV Generator
+# Author   : Paule Macedo
+# Contact  : Paulemacedo@proton.me
+# Created  : 2024-03-03
+# Usage    : Generate HTML/PDF CVs from local JSON files
+# Notice   : Handle personal data with consent and in compliance with the law
+# =============================================================================
 
-# -------- PDF SUPPORT --------
+from __future__ import annotations
+
+import json
+import os
+import sys
+from pathlib import Path
+from typing import Any
+
+from jinja2 import Environment, FileSystemLoader
+
+AVAILABLE_TEMPLATES = ["ivory", "paule"]
+DEFAULT_TEMPLATE = "paule"
+AVAILABLE_LANGUAGES = ["en", "pt"]
+DEFAULT_LABELS = {
+    "pt": {
+        "skills": "Competências",
+        "experience": "Experiência Profissional",
+        "education": "Formação Acadêmica",
+        "projects": "Projetos",
+        "certifications": "Formação Complementar",
+        "publications": "Publicações",
+    },
+    "en": {
+        "skills": "Skills",
+        "experience": "Professional Experience",
+        "education": "Education",
+        "projects": "Projects",
+        "certifications": "Additional Training",
+        "publications": "Publications",
+    },
+}
+DEFAULT_CONTACT = {
+    "linkedin": "",
+    "phone": "",
+    "website": "",
+    "email": "",
+    "github": "",
+}
+
+WORKSPACE_ROOT = Path(__file__).resolve().parent
+DATA_DIR = WORKSPACE_ROOT / "data"
+TEMPLATES_DIR = WORKSPACE_ROOT / "templates"
+OUTPUT_DIR = WORKSPACE_ROOT / "output"
+
+
 try:
     from playwright.sync_api import sync_playwright
+
     PDF_ENABLED = True
 except ImportError:
     PDF_ENABLED = False
     print("⚠️  Playwright not installed. PDF output disabled.")
     print("   Run: pip install playwright && playwright install chromium")
 
-AVAILABLE_TEMPLATES = ["ivory", "paule"]  # add more template names here as you create them
-DEFAULT_TEMPLATE    = "ivory"
 
-args      = sys.argv[1:]
-langs     = ["en", "pt"] if not args or args[0] == "all" else [args[0]]
-templates = AVAILABLE_TEMPLATES if len(args) > 1 and args[1] == "all" else [args[1] if len(args) > 1 else DEFAULT_TEMPLATE]
-
-invalid = [t for t in templates if t not in AVAILABLE_TEMPLATES]
-if invalid:
-    print(f"Template(s) not found: {', '.join(invalid)}. Available: {', '.join(AVAILABLE_TEMPLATES)}")
-    sys.exit(1)
-
-# -------- LOAD DATA --------
-data_files = glob.glob("data/*.json")
-if not data_files:
-    print("No data files found in the 'data' folder.")
-    sys.exit(1)
-
-def generate_pdf(html_path: str, pdf_path: str):
+def generate_pdf(html_path: Path, pdf_path: Path) -> None:
     """Render an HTML file to PDF using a headless Chromium browser."""
-    abs_html_path = os.path.abspath(html_path)
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
+    abs_html_path = html_path.resolve()
+    with sync_playwright() as browser_context:
+        browser = browser_context.chromium.launch()
         page = browser.new_page()
-        page.goto(f"file:///{abs_html_path}", wait_until="networkidle")
+        page.goto(f"file:///{abs_html_path.as_posix()}", wait_until="networkidle")
         page.pdf(
-            path=pdf_path,
+            path=str(pdf_path),
             format="A4",
             print_background=True,
-            margin={"top": "0", "right": "0", "bottom": "0", "left": "0"}
+            margin={"top": "0", "right": "0", "bottom": "0", "left": "0"},
         )
         browser.close()
 
-for input_file in data_files:
-    with open(input_file, encoding="utf-8") as f:
-        data = json.load(f)
 
-    perfil = data
-    default_labels = {
-        "pt": {
-            "skills": "Competências",
-            "experience": "Experiência Profissional",
-            "education": "Formação Acadêmica",
-            "projects": "Projetos",
-            "certifications": "Formação Complementar",
-            "publications": "Publicações",
-        },
-        "en": {
-            "skills": "Skills",
-            "experience": "Professional Experience",
-            "education": "Education",
-            "projects": "Projects",
-            "certifications": "Additional Training",
-            "publications": "Publications",
-        },
-    }
+def load_json_file(file_path: Path) -> dict[str, Any]:
+    with file_path.open(encoding="utf-8") as file_handle:
+        return json.load(file_handle)
 
-    all_labels = data.get("labels", default_labels)
 
-    env = Environment(loader=FileSystemLoader("templates"))
+def normalize_language_value(value: Any, language: str) -> str:
+    if isinstance(value, dict):
+        return str(value.get(language, ""))
+    if value is None:
+        return ""
+    return str(value)
 
-    # Always generate for all templates
-    templates = AVAILABLE_TEMPLATES
 
-    for template_name in templates:
-        template = env.get_template(f"{template_name}.html")
+def normalize_text_list(value: Any, language: str) -> list[str]:
+    if isinstance(value, dict):
+        value = value.get(language, [])
 
-        for LANG in langs:
-            labels = all_labels[LANG]
+    if isinstance(value, str):
+        return [value] if value else []
 
-            # -------- PROCESS CONTACT LINE --------
-            contact = perfil.get("contact", {
-                "linkedin": "",
-                "phone": "",
-                "website": "",
-                "email": "",
-                "github": ""
-            })
-            contact_line = f"{contact['linkedin']} | {contact['phone']} | {contact['website']} | {contact['email']} | {contact['github']}"
+    if not isinstance(value, list):
+        return []
 
-            # -------- PREPARE EXPERIENCE --------
-            experience = []
-            for exp in perfil.get("experience", []):
-                experience.append({
-                    "role":     exp["role"][LANG],
-                    "company":  exp["company"],
-                    "location": exp["location"],
-                    "date":     exp["date"][LANG],
-                    "bullets":  exp["bullets"][LANG]
-                })
+    return [str(item) for item in value if str(item).strip()]
 
-            # -------- PREPARE EDUCATION --------
-            education = []
-            raw_education = perfil.get("education", [])
 
-            # Supports both formats:
-            # 1) education: [ ... ]
-            # 2) education: { "pt": [ ... ], "en": [ ... ] }
-            if isinstance(raw_education, dict):
-                raw_education = raw_education.get(LANG, [])
+def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
+    languages = AVAILABLE_LANGUAGES if not arguments or arguments[0] == "all" else [arguments[0]]
 
-            for edu in raw_education:
-                if not isinstance(edu, dict):
-                    continue
+    if len(arguments) > 1:
+        selected_templates = AVAILABLE_TEMPLATES if arguments[1] == "all" else [arguments[1]]
+    else:
+        selected_templates = [DEFAULT_TEMPLATE]
 
-                degree_value = edu.get("degree", "")
-                if isinstance(degree_value, dict):
-                    degree_value = degree_value.get(LANG, "")
-                elif not isinstance(degree_value, str):
-                    degree_value = str(degree_value)
+    invalid_templates = [template_name for template_name in selected_templates if template_name not in AVAILABLE_TEMPLATES]
+    if invalid_templates:
+        print(
+            f"Template(s) not found: {', '.join(invalid_templates)}. "
+            f"Available: {', '.join(AVAILABLE_TEMPLATES)}"
+        )
+        sys.exit(1)
 
-                date_value = edu.get("date", edu.get("expected", ""))
-                if isinstance(date_value, dict):
-                    date_value = date_value.get(LANG, "")
-                elif not isinstance(date_value, str):
-                    date_value = str(date_value)
+    invalid_languages = [language for language in languages if language not in AVAILABLE_LANGUAGES]
+    if invalid_languages:
+        print(
+            f"Language(s) not found: {', '.join(invalid_languages)}. "
+            f"Available: {', '.join(AVAILABLE_LANGUAGES)}"
+        )
+        sys.exit(1)
 
-                details_value = edu.get("details", [])
-                if isinstance(details_value, dict):
-                    details_value = details_value.get(LANG, [])
-                elif isinstance(details_value, str):
-                    details_value = [details_value] if details_value else []
-                elif not isinstance(details_value, list):
-                    details_value = []
+    return languages, selected_templates
 
-                education.append({
-                    "degree": degree_value,
-                    "institution": edu.get("institution", ""),
-                    "location": edu.get("location", ""),
-                    "date": date_value,
-                    "details": details_value
-                })
 
-                
-            # -------- PREPARE CERTIFICATIONS --------
-            certifications = perfil.get("certifications", {}).get(LANG, [])
+def prepare_contact(profile: dict[str, Any]) -> dict[str, str]:
+    contact = dict(DEFAULT_CONTACT)
+    contact.update(profile.get("contact", {}))
+    return {key: str(value) for key, value in contact.items()}
 
-            # -------- PREPARE PUBLICATIONS --------
-            publications = []
-            raw_publications = perfil.get("publications", [])
-            
-            # Supports both formats:
-            # 1) publications: [ ... ]
-            # 2) publications: { "pt": [ ... ], "en": [ ... ] }
-            if isinstance(raw_publications, dict):
-                raw_publications = raw_publications.get(LANG, [])
-            
-            for pub in raw_publications:
-                if not isinstance(pub, dict):
-                    continue
-            
-                title_value = pub.get("title", "")
-                if isinstance(title_value, dict):
-                    title_value = title_value.get(LANG, "")
-                elif not isinstance(title_value, str):
-                    title_value = str(title_value)
-            
-                details_value = pub.get("details", [])
-                if isinstance(details_value, dict):
-                    details_value = details_value.get(LANG, [])
-                elif isinstance(details_value, str):
-                    details_value = [details_value] if details_value else []
-                elif not isinstance(details_value, list):
-                    details_value = []
 
-                # Fallback when "details" is missing or empty: use "description"
-                if not details_value:
-                    description_value = pub.get("description", "")
-                    if isinstance(description_value, dict):
-                        description_value = description_value.get(LANG, "")
-                    if isinstance(description_value, str) and description_value.strip():
-                        parts = [p.strip() for p in description_value.split(". ") if p.strip()]
-                        details_value = [p if p.endswith(".") else p + "." for p in parts]
+def prepare_experience(profile: dict[str, Any], language: str) -> list[dict[str, Any]]:
+    experience_items: list[dict[str, Any]] = []
+    for experience in profile.get("experience", []):
+        if not isinstance(experience, dict):
+            continue
 
-                venue_value = pub.get("venue", "")
-                if isinstance(venue_value, dict):
-                    venue_value = venue_value.get(LANG, "")
-                if not isinstance(venue_value, str):
-                    venue_value = str(venue_value)
+        experience_items.append(
+            {
+                "role": normalize_language_value(experience.get("role", ""), language),
+                "company": str(experience.get("company", "")),
+                "location": str(experience.get("location", "")),
+                "date": normalize_language_value(experience.get("date", ""), language),
+                "bullets": normalize_text_list(experience.get("bullets", []), language),
+            }
+        )
 
-                doi_value = pub.get("doi", "")
-                if isinstance(doi_value, str) and doi_value.strip():
-                    details_value.append(f"DOI: {doi_value.strip()}.")
-                            
-                publications.append({
-                    "title": title_value,
-                    "venue": venue_value.strip(),
-                    "date": pub.get("date", ""),
-                    "details": details_value
-                })
+    return experience_items
 
-            # -------- PREPARE SKILLS --------
-            skills = perfil["skills"]
-            processed_skills = []
-            for skill in skills:
-                if "items" not in skill:
-                    skill["items"] = skill.get(f"items_{LANG}", [])
-                processed_skills.append(skill)
 
-            # -------- PREPARE PROJECTS --------
-            raw_projects = perfil.get("projects", [])
-            if isinstance(raw_projects, dict):
-                raw_projects = raw_projects.get(LANG, [])
-            elif not isinstance(raw_projects, list):
-                raw_projects = []
+def prepare_education(profile: dict[str, Any], language: str) -> list[dict[str, Any]]:
+    raw_education = profile.get("education", [])
+    if isinstance(raw_education, dict):
+        raw_education = raw_education.get(language, [])
 
-            projects = []
-            for project in raw_projects:
-                if isinstance(project, str):
-                    projects.append(project)
-                    continue
+    education_items: list[dict[str, Any]] = []
+    for education in raw_education:
+        if not isinstance(education, dict):
+            continue
 
-                if isinstance(project, dict):
-                    name = str(project.get("name", "")).strip()
-                    subtitle = str(project.get("subtitle", "")).strip()
-                    description = str(project.get("description", "")).strip()
+        education_items.append(
+            {
+                "degree": normalize_language_value(education.get("degree", ""), language),
+                "institution": str(education.get("institution", "")),
+                "location": str(education.get("location", "")),
+                "date": normalize_language_value(education.get("date", education.get("expected", "")), language),
+                "details": normalize_text_list(education.get("details", []), language),
+            }
+        )
 
-                    parts = [p for p in [name, subtitle, description] if p]
-                    if parts:
-                        projects.append(" | ".join(parts))
-                    continue
+    return education_items
 
-                projects.append(str(project))
 
-            # -------- RENDER --------
-            try:
-                html = template.render(
-                    lang=LANG,
-                    nome=perfil["nome"],
-                    location=perfil["location"][LANG],
-                    headline=perfil["headline"][LANG],
-                    contact=contact,
-                    contact_line=contact_line,
-                    skills=sorted(processed_skills, key=lambda x: x["priority"]),
-                    experience=experience,
-                    projects=projects,
-                    education=education,
-                    certifications=certifications,
-                    publications=publications,
-                    labels=labels
-                )
-            except Exception as e:
-                print("Error during rendering:", e)
-                print("Debugging skills data:", sorted(perfil["skills"], key=lambda x: x["priority"]))
-                raise
+def split_description_into_bullets(description: str) -> list[str]:
+    description = description.strip()
+    if not description:
+        return []
 
-            # -------- SAVE OUTPUT --------
-            job_name = os.path.splitext(os.path.basename(input_file))[0]
-            output_dir = os.path.join("output", job_name, template_name)
-            os.makedirs(output_dir, exist_ok=True)
+    segments = [segment.strip() for segment in description.split(". ") if segment.strip()]
+    return [segment if segment.endswith(".") else f"{segment}." for segment in segments]
 
-            # HTML
-            out_path_html = os.path.join(output_dir, f"cv_{LANG}.html")
-            with open(out_path_html, "w", encoding="utf-8") as f:
-                f.write(html)
-            print(f"CV gerado:  {out_path_html}")
 
-            # PDF
+def prepare_publications(profile: dict[str, Any], language: str) -> list[dict[str, Any]]:
+    raw_publications = profile.get("publications", [])
+    if isinstance(raw_publications, dict):
+        raw_publications = raw_publications.get(language, [])
+
+    publication_items: list[dict[str, Any]] = []
+    for publication in raw_publications:
+        if not isinstance(publication, dict):
+            continue
+
+        title = normalize_language_value(publication.get("title", ""), language)
+        details = normalize_text_list(publication.get("details", []), language)
+
+        if not details:
+            description = normalize_language_value(publication.get("description", ""), language)
+            details = split_description_into_bullets(description)
+
+        venue = normalize_language_value(publication.get("venue", ""), language).strip()
+        doi = str(publication.get("doi", "")).strip()
+        if doi:
+            details.append(f"DOI: {doi}.")
+
+        publication_items.append(
+            {
+                "title": title,
+                "venue": venue,
+                "date": str(publication.get("date", "")),
+                "details": details,
+            }
+        )
+
+    return publication_items
+
+
+def prepare_skills(profile: dict[str, Any], language: str) -> list[dict[str, Any]]:
+    skill_items: list[dict[str, Any]] = []
+    for skill in profile.get("skills", []):
+        if not isinstance(skill, dict):
+            continue
+
+        normalized_skill = dict(skill)
+        if "items" not in normalized_skill:
+            normalized_skill["items"] = normalized_skill.get(f"items_{language}", [])
+        skill_items.append(normalized_skill)
+
+    return skill_items
+
+
+def prepare_projects(profile: dict[str, Any], language: str) -> list[str]:
+    raw_projects = profile.get("projects", [])
+    if isinstance(raw_projects, dict):
+        raw_projects = raw_projects.get(language, [])
+    elif not isinstance(raw_projects, list):
+        raw_projects = []
+
+    project_items: list[str] = []
+    for project in raw_projects:
+        if isinstance(project, str):
+            project_items.append(project)
+            continue
+
+        if isinstance(project, dict):
+            name = str(project.get("name", "")).strip()
+            subtitle = str(project.get("subtitle", "")).strip()
+            description = str(project.get("description", "")).strip()
+            parts = [part for part in [name, subtitle, description] if part]
+            if parts:
+                project_items.append(" | ".join(parts))
+            continue
+
+        project_items.append(str(project))
+
+    return project_items
+
+
+def render_profile(
+    template: Any,
+    profile: dict[str, Any],
+    language: str,
+    labels: dict[str, str],
+) -> str:
+    contact = prepare_contact(profile)
+    return template.render(
+        lang=language,
+        nome=profile.get("nome", ""),
+        location=normalize_language_value(profile.get("location", {}), language),
+        headline=normalize_language_value(profile.get("headline", {}), language),
+        contact=contact,
+        contact_line=" | ".join(
+            [
+                contact["linkedin"],
+                contact["phone"],
+                contact["website"],
+                contact["email"],
+                contact["github"],
+            ]
+        ),
+        skills=sorted(prepare_skills(profile, language), key=lambda item: item.get("priority", 0)),
+        experience=prepare_experience(profile, language),
+        projects=prepare_projects(profile, language),
+        education=prepare_education(profile, language),
+        certifications=normalize_text_list(profile.get("certifications", []), language),
+        publications=prepare_publications(profile, language),
+        labels=labels,
+    )
+
+
+def generate_cv_files(profile_path: Path, languages: list[str], template_names: list[str]) -> None:
+    profile = load_json_file(profile_path)
+    labels_by_language = profile.get("labels", DEFAULT_LABELS)
+    environment = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+
+    for template_name in template_names:
+        template = environment.get_template(f"{template_name}.html")
+
+        for language in languages:
+            html = render_profile(template, profile, language, labels_by_language[language])
+
+            output_directory = OUTPUT_DIR / profile_path.stem / template_name
+            output_directory.mkdir(parents=True, exist_ok=True)
+
+            html_path = output_directory / f"cv_{language}.html"
+            html_path.write_text(html, encoding="utf-8")
+            print(f"CV gerado:  {html_path.relative_to(WORKSPACE_ROOT)}")
+
             if PDF_ENABLED:
-                out_path_pdf = os.path.join(output_dir, f"cv_{LANG}.pdf")
+                pdf_path = output_directory / f"cv_{language}.pdf"
                 try:
-                    generate_pdf(out_path_html, out_path_pdf)
-                    print(f"PDF gerado: {out_path_pdf}")
-                except Exception as e:
-                    print(f"⚠️  Erro ao gerar PDF ({out_path_pdf}): {e}")
+                    generate_pdf(html_path, pdf_path)
+                    print(f"PDF gerado: {pdf_path.relative_to(WORKSPACE_ROOT)}")
+                except Exception as exception:
+                    print(f"⚠️  Erro ao gerar PDF ({pdf_path.relative_to(WORKSPACE_ROOT)}): {exception}")
+
+
+def main() -> None:
+    languages, template_names = parse_cli_arguments(sys.argv[1:])
+    data_files = sorted(DATA_DIR.glob("*.json"))
+
+    if not data_files:
+        print("No data files found in the 'data' folder.")
+        sys.exit(1)
+
+    for profile_path in data_files:
+        generate_cv_files(profile_path, languages, template_names)
+
+
+if __name__ == "__main__":
+    main()

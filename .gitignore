@@ -1,3 +1,4 @@
-# Ignore private data files
-/data/-*.json
+/data/*.json
+!/data/example.json
 /output
+
