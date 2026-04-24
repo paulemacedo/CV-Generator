@@ -51,7 +51,26 @@ for input_file in data_files:
         data = json.load(f)
 
     perfil = data
-    all_labels = data["labels"]
+    default_labels = {
+        "pt": {
+            "skills": "Competências",
+            "experience": "Experiência Profissional",
+            "education": "Formação Acadêmica",
+            "projects": "Projetos",
+            "certifications": "Formação Complementar",
+            "publications": "Publicações",
+        },
+        "en": {
+            "skills": "Skills",
+            "experience": "Professional Experience",
+            "education": "Education",
+            "projects": "Projects",
+            "certifications": "Additional Training",
+            "publications": "Publications",
+        },
+    }
+
+    all_labels = data.get("labels", default_labels)
 
     env = Environment(loader=FileSystemLoader("templates"))
 
@@ -65,12 +84,18 @@ for input_file in data_files:
             labels = all_labels[LANG]
 
             # -------- PROCESS CONTACT LINE --------
-            contact = perfil["contact"]
+            contact = perfil.get("contact", {
+                "linkedin": "",
+                "phone": "",
+                "website": "",
+                "email": "",
+                "github": ""
+            })
             contact_line = f"{contact['linkedin']} | {contact['phone']} | {contact['website']} | {contact['email']} | {contact['github']}"
 
             # -------- PREPARE EXPERIENCE --------
             experience = []
-            for exp in perfil["experience"]:
+            for exp in perfil.get("experience", []):
                 experience.append({
                     "role":     exp["role"][LANG],
                     "company":  exp["company"],
@@ -81,28 +106,103 @@ for input_file in data_files:
 
             # -------- PREPARE EDUCATION --------
             education = []
-            if "education" in perfil:
-                for edu in perfil["education"]:
-                    education.append({
-                        "degree": edu["degree"][LANG],
-                        "institution": edu["institution"],
-                        "location": edu["location"],
-                        "date": edu["date"][LANG],
-                        "details": edu.get("details", {}).get(LANG, [])
-                    })
+            raw_education = perfil.get("education", [])
 
+            # Supports both formats:
+            # 1) education: [ ... ]
+            # 2) education: { "pt": [ ... ], "en": [ ... ] }
+            if isinstance(raw_education, dict):
+                raw_education = raw_education.get(LANG, [])
+
+            for edu in raw_education:
+                if not isinstance(edu, dict):
+                    continue
+
+                degree_value = edu.get("degree", "")
+                if isinstance(degree_value, dict):
+                    degree_value = degree_value.get(LANG, "")
+                elif not isinstance(degree_value, str):
+                    degree_value = str(degree_value)
+
+                date_value = edu.get("date", edu.get("expected", ""))
+                if isinstance(date_value, dict):
+                    date_value = date_value.get(LANG, "")
+                elif not isinstance(date_value, str):
+                    date_value = str(date_value)
+
+                details_value = edu.get("details", [])
+                if isinstance(details_value, dict):
+                    details_value = details_value.get(LANG, [])
+                elif isinstance(details_value, str):
+                    details_value = [details_value] if details_value else []
+                elif not isinstance(details_value, list):
+                    details_value = []
+
+                education.append({
+                    "degree": degree_value,
+                    "institution": edu.get("institution", ""),
+                    "location": edu.get("location", ""),
+                    "date": date_value,
+                    "details": details_value
+                })
+
+                
             # -------- PREPARE CERTIFICATIONS --------
             certifications = perfil.get("certifications", {}).get(LANG, [])
 
             # -------- PREPARE PUBLICATIONS --------
             publications = []
-            if "publications" in perfil:
-                for pub in perfil["publications"]:
-                    publications.append({
-                        "title": pub["title"][LANG],
-                        "date": pub["date"],
-                        "details": pub.get("details", {}).get(LANG, [])
-                    })
+            raw_publications = perfil.get("publications", [])
+            
+            # Supports both formats:
+            # 1) publications: [ ... ]
+            # 2) publications: { "pt": [ ... ], "en": [ ... ] }
+            if isinstance(raw_publications, dict):
+                raw_publications = raw_publications.get(LANG, [])
+            
+            for pub in raw_publications:
+                if not isinstance(pub, dict):
+                    continue
+            
+                title_value = pub.get("title", "")
+                if isinstance(title_value, dict):
+                    title_value = title_value.get(LANG, "")
+                elif not isinstance(title_value, str):
+                    title_value = str(title_value)
+            
+                details_value = pub.get("details", [])
+                if isinstance(details_value, dict):
+                    details_value = details_value.get(LANG, [])
+                elif isinstance(details_value, str):
+                    details_value = [details_value] if details_value else []
+                elif not isinstance(details_value, list):
+                    details_value = []
+
+                # Fallback when "details" is missing or empty: use "description"
+                if not details_value:
+                    description_value = pub.get("description", "")
+                    if isinstance(description_value, dict):
+                        description_value = description_value.get(LANG, "")
+                    if isinstance(description_value, str) and description_value.strip():
+                        parts = [p.strip() for p in description_value.split(". ") if p.strip()]
+                        details_value = [p if p.endswith(".") else p + "." for p in parts]
+
+                venue_value = pub.get("venue", "")
+                if isinstance(venue_value, dict):
+                    venue_value = venue_value.get(LANG, "")
+                if not isinstance(venue_value, str):
+                    venue_value = str(venue_value)
+
+                doi_value = pub.get("doi", "")
+                if isinstance(doi_value, str) and doi_value.strip():
+                    details_value.append(f"DOI: {doi_value.strip()}.")
+                            
+                publications.append({
+                    "title": title_value,
+                    "venue": venue_value.strip(),
+                    "date": pub.get("date", ""),
+                    "details": details_value
+                })
 
             # -------- PREPARE SKILLS --------
             skills = perfil["skills"]
@@ -111,6 +211,31 @@ for input_file in data_files:
                 if "items" not in skill:
                     skill["items"] = skill.get(f"items_{LANG}", [])
                 processed_skills.append(skill)
+
+            # -------- PREPARE PROJECTS --------
+            raw_projects = perfil.get("projects", [])
+            if isinstance(raw_projects, dict):
+                raw_projects = raw_projects.get(LANG, [])
+            elif not isinstance(raw_projects, list):
+                raw_projects = []
+
+            projects = []
+            for project in raw_projects:
+                if isinstance(project, str):
+                    projects.append(project)
+                    continue
+
+                if isinstance(project, dict):
+                    name = str(project.get("name", "")).strip()
+                    subtitle = str(project.get("subtitle", "")).strip()
+                    description = str(project.get("description", "")).strip()
+
+                    parts = [p for p in [name, subtitle, description] if p]
+                    if parts:
+                        projects.append(" | ".join(parts))
+                    continue
+
+                projects.append(str(project))
 
             # -------- RENDER --------
             try:
@@ -123,7 +248,7 @@ for input_file in data_files:
                     contact_line=contact_line,
                     skills=sorted(processed_skills, key=lambda x: x["priority"]),
                     experience=experience,
-                    projects=perfil["projects"][LANG],
+                    projects=projects,
                     education=education,
                     certifications=certifications,
                     publications=publications,

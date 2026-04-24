@@ -4,6 +4,14 @@
   margin: 10mm 0mm; /* Ajusta margens para A4 com menos espaço lateral */
 }
 
+.icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  margin-right: 4px;
+  fill: currentColor;
+}
+
 /* Print-specific styles */
 @media print {
     a {
