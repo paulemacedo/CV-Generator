@@ -18,7 +18,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
-AVAILABLE_TEMPLATES = ["ivory", "paule", "Master"]
+AVAILABLE_TEMPLATES = ["ivory", "paule"]
 DEFAULT_TEMPLATE = "paule"
 AVAILABLE_LANGUAGES = ["en", "pt"]
 DEFAULT_LABELS = {
@@ -399,7 +399,12 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
     environment = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
     profile_name = profile_path.stem.lstrip("-_") or profile_path.stem
 
-    for template_name in template_names:
+    filename = profile_path.stem.lower()
+    prefix = filename.split("-")[0]
+
+    templates_to_use = ["Master"] if sys.prefix == "master" else template_names
+
+    for template_name in templates_to_use:
         template = environment.get_template(f"{template_name}.html")
 
         for language in languages:
