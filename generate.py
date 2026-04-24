@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # =============================================================================
 # Module   : generate.py
 # Project  : CV Generator
@@ -8,8 +10,6 @@
 # Notice   : Handle personal data with consent and in compliance with the law
 # =============================================================================
 
-from __future__ import annotations
-
 import json
 import os
 import sys
@@ -18,7 +18,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
-AVAILABLE_TEMPLATES = ["ivory", "paule"]
+AVAILABLE_TEMPLATES = ["ivory", "paule", "Master"]
 DEFAULT_TEMPLATE = "paule"
 AVAILABLE_LANGUAGES = ["en", "pt"]
 DEFAULT_LABELS = {
@@ -51,6 +51,33 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent
 DATA_DIR = WORKSPACE_ROOT / "data"
 TEMPLATES_DIR = WORKSPACE_ROOT / "templates"
 OUTPUT_DIR = WORKSPACE_ROOT / "output"
+
+
+def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
+    languages = AVAILABLE_LANGUAGES if not arguments or arguments[0] == "all" else [arguments[0]]
+
+    if len(arguments) > 1:
+        selected_templates = AVAILABLE_TEMPLATES if arguments[1] == "all" else [arguments[1]]
+    else:
+        selected_templates = [DEFAULT_TEMPLATE]
+
+    invalid_templates = [template_name for template_name in selected_templates if template_name not in AVAILABLE_TEMPLATES]
+    if invalid_templates:
+        print(
+            f"Template(s) not found: {', '.join(invalid_templates)}. "
+            f"Available: {', '.join(AVAILABLE_TEMPLATES)}"
+        )
+        sys.exit(1)
+
+    invalid_languages = [language for language in languages if language not in AVAILABLE_LANGUAGES]
+    if invalid_languages:
+        print(
+            f"Language(s) not found: {', '.join(invalid_languages)}. "
+            f"Available: {', '.join(AVAILABLE_LANGUAGES)}"
+        )
+        sys.exit(1)
+
+    return languages, selected_templates
 
 
 try:
@@ -102,34 +129,50 @@ def normalize_text_list(value: Any, language: str) -> list[str]:
     if not isinstance(value, list):
         return []
 
-    return [str(item) for item in value if str(item).strip()]
+    normalized_items: list[str] = []
+    for item in value:
+        if isinstance(item, dict):
+            normalized_item = normalize_language_value(item, language)
+        else:
+            normalized_item = str(item)
+
+        if normalized_item.strip():
+            normalized_items.append(normalized_item)
+
+    return normalized_items
 
 
-def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
-    languages = AVAILABLE_LANGUAGES if not arguments or arguments[0] == "all" else [arguments[0]]
+def localize_text(value: Any, language: str) -> str:
+    if isinstance(value, dict):
+        if language in value:
+            return localize_text(value[language], language)
 
-    if len(arguments) > 1:
-        selected_templates = AVAILABLE_TEMPLATES if arguments[1] == "all" else [arguments[1]]
-    else:
-        selected_templates = [DEFAULT_TEMPLATE]
+        for nested_value in value.values():
+            localized_value = localize_text(nested_value, language)
+            if localized_value:
+                return localized_value
 
-    invalid_templates = [template_name for template_name in selected_templates if template_name not in AVAILABLE_TEMPLATES]
-    if invalid_templates:
-        print(
-            f"Template(s) not found: {', '.join(invalid_templates)}. "
-            f"Available: {', '.join(AVAILABLE_TEMPLATES)}"
-        )
-        sys.exit(1)
+        return ""
 
-    invalid_languages = [language for language in languages if language not in AVAILABLE_LANGUAGES]
-    if invalid_languages:
-        print(
-            f"Language(s) not found: {', '.join(invalid_languages)}. "
-            f"Available: {', '.join(AVAILABLE_LANGUAGES)}"
-        )
-        sys.exit(1)
+    if isinstance(value, list):
+        items = [localize_text(item, language) for item in value]
+        return " ".join(item for item in items if item).strip()
 
-    return languages, selected_templates
+    if value is None:
+        return ""
+
+    return str(value).strip()
+
+
+def localize_map(value: Any, language: str) -> dict[str, str]:
+    if isinstance(value, dict) and ("pt" in value or "en" in value):
+        return {
+            "pt": localize_text(value.get("pt", ""), "pt"),
+            "en": localize_text(value.get("en", ""), "en"),
+        }
+
+    localized_value = localize_text(value, language)
+    return {"pt": localized_value, "en": localized_value}
 
 
 def prepare_contact(profile: dict[str, Any]) -> dict[str, str]:
@@ -146,10 +189,10 @@ def prepare_experience(profile: dict[str, Any], language: str) -> list[dict[str,
 
         experience_items.append(
             {
-                "role": normalize_language_value(experience.get("role", ""), language),
+                "role": localize_map(experience.get("role", ""), language),
                 "company": str(experience.get("company", "")),
                 "location": str(experience.get("location", "")),
-                "date": normalize_language_value(experience.get("date", ""), language),
+                "date": localize_map(experience.get("date", ""), language),
                 "bullets": normalize_text_list(experience.get("bullets", []), language),
             }
         )
@@ -169,10 +212,10 @@ def prepare_education(profile: dict[str, Any], language: str) -> list[dict[str, 
 
         education_items.append(
             {
-                "degree": normalize_language_value(education.get("degree", ""), language),
+                "degree": localize_map(education.get("degree", ""), language),
                 "institution": str(education.get("institution", "")),
                 "location": str(education.get("location", "")),
-                "date": normalize_language_value(education.get("date", education.get("expected", "")), language),
+                "date": localize_map(education.get("date", education.get("expected", "")), language),
                 "details": normalize_text_list(education.get("details", []), language),
             }
         )
@@ -213,10 +256,13 @@ def prepare_publications(profile: dict[str, Any], language: str) -> list[dict[st
 
         publication_items.append(
             {
-                "title": title,
+                "title": localize_map(publication.get("title", ""), language),
                 "venue": venue,
-                "date": str(publication.get("date", "")),
+                "date": localize_map(publication.get("date", ""), language),
+                "description": localize_map(publication.get("description", ""), language),
                 "details": details,
+                "doi": doi,
+                "doi_url": str(publication.get("doi_url", "")).strip(),
             }
         )
 
@@ -232,36 +278,75 @@ def prepare_skills(profile: dict[str, Any], language: str) -> list[dict[str, Any
         normalized_skill = dict(skill)
         if "items" not in normalized_skill:
             normalized_skill["items"] = normalized_skill.get(f"items_{language}", [])
+        if isinstance(normalized_skill.get("label"), dict):
+            normalized_skill["label"] = localize_map(normalized_skill["label"], language)
         skill_items.append(normalized_skill)
 
     return skill_items
 
 
-def prepare_projects(profile: dict[str, Any], language: str) -> list[str]:
+def prepare_projects(profile: dict[str, Any], language: str) -> list[dict[str, Any]]:
     raw_projects = profile.get("projects", [])
     if isinstance(raw_projects, dict):
         raw_projects = raw_projects.get(language, [])
     elif not isinstance(raw_projects, list):
         raw_projects = []
 
-    project_items: list[str] = []
+    project_items: list[dict[str, Any]] = []
     for project in raw_projects:
         if isinstance(project, str):
-            project_items.append(project)
+            project_items.append({"name": localize_map(project, language)})
             continue
 
         if isinstance(project, dict):
-            name = str(project.get("name", "")).strip()
-            subtitle = str(project.get("subtitle", "")).strip()
-            description = str(project.get("description", "")).strip()
-            parts = [part for part in [name, subtitle, description] if part]
-            if parts:
-                project_items.append(" | ".join(parts))
+            project_items.append(
+                {
+                    "name": localize_map(project.get("name", ""), language),
+                    "subtitle": localize_map(project.get("subtitle", ""), language),
+                    "description": localize_map(project.get("description", ""), language),
+                    "github": str(project.get("github", "")).strip(),
+                    "areas": [str(area) for area in project.get("areas", []) if str(area).strip()],
+                }
+            )
             continue
 
-        project_items.append(str(project))
+        project_items.append({"name": localize_map(project, language)})
 
     return project_items
+
+
+def prepare_certifications(profile: dict[str, Any], language: str) -> list[Any]:
+    raw_certifications = profile.get("certifications", [])
+
+    if isinstance(raw_certifications, dict):
+        selected_items = raw_certifications.get(language, [])
+        if isinstance(selected_items, list):
+            return [str(item) for item in selected_items if str(item).strip()]
+        if isinstance(selected_items, str) and selected_items.strip():
+            return [selected_items]
+        return []
+
+    certifications: list[Any] = []
+    for certification in raw_certifications:
+        if not isinstance(certification, dict):
+            certification_text = str(certification).strip()
+            if certification_text:
+                certifications.append(certification_text)
+            continue
+
+        certifications.append(
+            {
+                "name": localize_map(certification.get("name", ""), language),
+                "issuer": str(certification.get("issuer", "")),
+                "date": localize_map(certification.get("date", ""), language),
+                "details": normalize_text_list(certification.get("details", []), language),
+                "hours": certification.get("hours"),
+                "score": certification.get("score"),
+                "url": str(certification.get("url", "")).strip(),
+            }
+        )
+
+    return certifications
 
 
 def render_profile(
@@ -271,11 +356,16 @@ def render_profile(
     labels: dict[str, str],
 ) -> str:
     contact = prepare_contact(profile)
+    display_name = localize_text(profile.get("name", profile.get("nome", "")), language)
     return template.render(
         lang=language,
-        nome=profile.get("nome", ""),
-        location=normalize_language_value(profile.get("location", {}), language),
-        headline=normalize_language_value(profile.get("headline", {}), language),
+        name=profile.get("name", profile.get("nome", {})),
+        nome=display_name,
+        location=profile.get("location", {}),
+        location_text=localize_text(profile.get("location", {}), language),
+        headline=profile.get("headline", {}),
+        headline_text=localize_text(profile.get("headline", {}), language),
+        summary=profile.get("summary", {}),
         contact=contact,
         contact_line=" | ".join(
             [
@@ -290,7 +380,7 @@ def render_profile(
         experience=prepare_experience(profile, language),
         projects=prepare_projects(profile, language),
         education=prepare_education(profile, language),
-        certifications=normalize_text_list(profile.get("certifications", []), language),
+        certifications=prepare_certifications(profile, language),
         publications=prepare_publications(profile, language),
         labels=labels,
     )

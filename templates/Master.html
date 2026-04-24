@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Master CV — {{ name[lang] }}</title>
+    <link rel="stylesheet" href="../common.css">
+    <style>
+        body { max-width: 900px; margin: 0 auto; background: #fff; }
+        h1, h2, h3 { color: #2c3e50; }
+        .section { margin-bottom: 2em; }
+        .meta { font-size: 0.9em; color: #888; margin-bottom: 1em; }
+        .label { font-weight: bold; color: #555; }
+        .tag { background: #eee; border-radius: 4px; padding: 2px 6px; font-size: 0.85em; margin-right: 4px; }
+        .area { color: #2980b9; font-size: 0.9em; margin-right: 8px; }
+        .item-list { margin: 0; padding-left: 1.2em; }
+        .item-list li { margin-bottom: 0.3em; }
+        .subtle { color: #888; font-size: 0.95em; }
+    </style>
+</head>
+<body>
+    <div class="meta">
+        <span>Master CV — Fonte de verdade | Última atualização: {{ _meta.last_updated }}</span><br>
+        <span>{{ _meta.description }}</span>
+    </div>
+    <h1>{{ name[lang] }}</h1>
+    <div class="section">
+        <span class="label">{{ location[lang] }}</span><br>
+        <span class="label">Contato:</span>
+        <ul class="item-list">
+            <li>Email profissional: {{ contact.email_professional }}</li>
+            <li>Email pessoal: {{ contact.email_personal }}</li>
+            <li>Telefone: {{ contact.phone }}</li>
+            <li>LinkedIn: <a href="{{ contact.linkedin }}">{{ contact.linkedin }}</a></li>
+            <li>GitHub: <a href="{{ contact.github }}">{{ contact.github }}</a></li>
+            <li>Website: <a href="{{ contact.website }}">{{ contact.website }}</a></li>
+        </ul>
+    </div>
+    <div class="section">
+        <h2>Headlines</h2>
+        <ul class="item-list">
+            {% for key, headline in headline.items() %}
+                <li><span class="label">{{ key }}:</span> {{ headline[lang] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="section">
+        <h2>Resumo</h2>
+        <ul class="item-list">
+            {% for key, summary in summary.items() %}
+                <li><span class="label">{{ key }}:</span> {{ summary[lang] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].skills }}</h2>
+        <ul class="item-list">
+            {% for skill in skills|sort(attribute='priority') %}
+                <li>
+                    <span class="label">{{ skill.label[lang] }}</span>:
+                    {{ skill.items|join(', ') }}
+                    {% if skill.areas %}<span class="subtle">[{{ skill.areas|join(', ') }}]</span>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].experience }}</h2>
+        {% for exp in experience %}
+            <div style="margin-bottom:1em;">
+                <span class="label">{{ exp.role[lang] }}</span> — {{ exp.company }}<br>
+                <span class="subtle">{{ exp.location }} | {{ exp.date[lang] }}</span>
+                <ul class="item-list">
+                    {% for bullet in exp.bullets %}
+                        <li>{{ bullet[lang] if bullet[lang] is defined else bullet }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].education }}</h2>
+        {% for edu in education %}
+            <div style="margin-bottom:1em;">
+                <span class="label">{{ edu.degree[lang] }}</span> — {{ edu.institution }}<br>
+                <span class="subtle">{{ edu.location }} | {{ edu.date[lang] }}</span>
+                {% if edu.details[lang] %}
+                <ul class="item-list">
+                    {% for detail in edu.details[lang] %}
+                        <li>{{ detail }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].certifications }}</h2>
+        {% for cert in certifications %}
+            <div style="margin-bottom:1em;">
+                {% if cert.name is defined %}
+                <span class="label">{{ cert.name[lang] if cert.name is mapping else cert.name }}</span> — {{ cert.issuer }}<br>
+                {% if cert.date %}<span class="subtle">{{ cert.date[lang] if cert.date is mapping else cert.date }}</span>{% endif %}
+                {% if cert.details %}
+                <ul class="item-list">
+                    {% for detail in cert.details %}
+                        <li>{{ detail[lang] if detail is mapping else detail }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% else %}
+                <span class="label">{{ cert }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].projects }}</h2>
+        {% for proj in projects %}
+            <div style="margin-bottom:1em;">
+                <span class="label">{{ proj.name[lang] if proj.name is mapping else proj.name }}</span>
+                {% if proj.subtitle %} — {{ proj.subtitle[lang] if proj.subtitle is mapping else proj.subtitle }}{% endif %}<br>
+                {% if proj.github %}<span class="subtle">GitHub: <a href="{{ proj.github }}">{{ proj.github }}</a></span><br>{% endif %}
+                {% if proj.description %}
+                    <span>{{ proj.description[lang] if proj.description is mapping else proj.description }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    <div class="section">
+        <h2>{{ labels[lang].publications }}</h2>
+        {% for pub in publications %}
+            <div style="margin-bottom:1em;">
+                <span class="label">{{ pub.title[lang] if pub.title is mapping else pub.title }}</span> — {{ pub.venue }}<br>
+                <span class="subtle">{{ pub.date[lang] if pub.date is mapping else pub.date }}</span><br>
+                {% if pub.description %}<span>{{ pub.description[lang] if pub.description is mapping else pub.description }}</span><br>{% endif %}
+                {% if pub.doi_url %}<span class="subtle">DOI: <a href="{{ pub.doi_url }}">{{ pub.doi }}</a></span>{% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

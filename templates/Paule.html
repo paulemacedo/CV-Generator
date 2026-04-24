@@ -13,7 +13,7 @@
 <!-- HEADER -->
 <header>
   <h1>{{ nome }}</h1>
-  <div class="header-sub">📍 {{ location }} | 💼 {{ headline }}</div>
+  <div class="header-sub">📍 {{ location_text }} | 💼 {{ headline_text }}</div>
   <div class="contact">
     <a href="{{ contact.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -41,7 +41,7 @@
   </div>
   {% for core in skills %}
   <div class="skill-row">
-    <strong>{{ core.label[lang] }}:</strong> {{ core["items"] | join(" | ") }}
+    <strong>{{ core.label[lang] if core.label is mapping else core.label }}:</strong> {{ core["items"] | join(" | ") }}
   </div>
   {% endfor %}
 </section>
@@ -55,10 +55,10 @@
   {% for exp in experience %}
   <div class="entry">
     <div class="entry-row">
-      <span class="entry-role">{{ exp.role }}</span>
+      <span class="entry-role">{{ exp.role[lang] if exp.role is mapping else exp.role }}</span>
       <span class="entry-company">{{ exp.company }}</span>
       <span class="entry-location">{{ exp.location }}</span>
-      <span class="entry-date">{{ exp.date }}</span>
+      <span class="entry-date">{{ exp.date[lang] if exp.date is mapping else exp.date }}</span>
     </div>
     <ul>
       {% for bullet in exp.bullets %}
@@ -78,10 +78,10 @@
   {% for edu in education %}
   <div class="entry">
     <div class="entry-row">
-      <span class="entry-role">{{ edu.degree }}</span>
+      <span class="entry-role">{{ edu.degree[lang] if edu.degree is mapping else edu.degree }}</span>
       <span class="entry-company">{{ edu.institution }}</span>
       <span class="entry-location">{{ edu.location }}</span>
-      <span class="entry-date">{{ edu.date }}</span>
+      <span class="entry-date">{{ edu.date[lang] if edu.date is mapping else edu.date }}</span>
     </div>
     {% if edu.details %}
     <ul>
@@ -102,7 +102,15 @@
   </div>
   <ul>
     {% for project in projects %}
-    <li>{{ project }}</li>
+      {% if project.name is defined %}
+        <li>
+          <strong>{{ project.name[lang] }}</strong>
+          {% if project.subtitle %} | {{ project.subtitle[lang] }}{% endif %}
+          {% if project.description %}<br>{{ project.description[lang] }}{% endif %}
+        </li>
+      {% else %}
+        <li>{{ project }}</li>
+      {% endif %}
     {% endfor %}
   </ul>
 </section>
@@ -115,7 +123,15 @@
   </div>
   <ul>
     {% for cert in certifications %}
+    {% if cert.name is defined %}
+    <li>
+      <strong>{{ cert.name[lang] if cert.name is mapping else cert.name }}</strong>
+      {% if cert.issuer %} — {{ cert.issuer }}{% endif %}
+      {% if cert.date %} — {{ cert.date[lang] if cert.date is mapping else cert.date }}{% endif %}
+    </li>
+    {% else %}
     <li>{{ cert }}</li>
+    {% endif %}
     {% endfor %}
   </ul>
 </section>
@@ -129,15 +145,21 @@
   {% for pub in publications %}
   <div class="entry">
     <div class="entry-row">
-      <span class="entry-role">{{ pub.title }}</span>
+      <span class="entry-role">{{ pub.title[lang] if pub.title is mapping else pub.title }}</span>
       <span class="entry-company">{{ pub.venue }}</span>
-      <span class="entry-date">{{ pub.date }}</span>
+      <span class="entry-date">{{ pub.date[lang] if pub.date is mapping else pub.date }}</span>
     </div>
+    {% if pub.description %}
+      <div>{{ pub.description[lang] if pub.description is mapping else pub.description }}</div>
+    {% endif %}
+    {% if pub.details %}
     <ul>
       {% for bullet in pub.details %}
-      <li>{{ bullet }}</li>
+      <li>{{ bullet[lang] if bullet is mapping else bullet }}</li>
       {% endfor %}
     </ul>
+    {% endif %}
+    {% if pub.doi %}<div>DOI: {{ pub.doi }}</div>{% endif %}
   </div>
   {% endfor %}
 </section>

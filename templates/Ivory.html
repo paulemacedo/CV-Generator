@@ -106,7 +106,15 @@
   <div class="section-title">{{ labels.projects }}</div>
   <ul>
     {% for project in projects %}
-    <li>{{ project }}</li>
+      {% if project.name is defined %}
+        <li>
+          <strong>{{ project.name[lang] }}</strong>
+          {% if project.subtitle %} | {{ project.subtitle[lang] }}{% endif %}
+          {% if project.description %}<br>{{ project.description[lang] }}{% endif %}
+        </li>
+      {% else %}
+        <li>{{ project }}</li>
+      {% endif %}
     {% endfor %}
   </ul>
 </section>
@@ -128,15 +136,21 @@
   {% for pub in publications %}
   <div class="entry">
     <div class="entry-header">
-      <div class="entry-title">{{ pub.title }}</div>
+      <div class="entry-title">{{ pub.title[lang] if pub.title is mapping else pub.title }}</div>
       <div class="entry-sub">{{ pub.venue }}</div>
-      <div class="entry-meta">{{ pub.date }}</div>
+      <div class="entry-meta">{{ pub.date[lang] if pub.date is mapping else pub.date }}</div>
     </div>
+    {% if pub.description %}
+      <div>{{ pub.description[lang] if pub.description is mapping else pub.description }}</div>
+    {% endif %}
+    {% if pub.details %}
     <ul>
       {% for bullet in pub.details %}
-      <li>{{ bullet }}</li>
+      <li>{{ bullet[lang] if bullet is mapping else bullet }}</li>
       {% endfor %}
     </ul>
+    {% endif %}
+    {% if pub.doi %}<div>DOI: {{ pub.doi }}</div>{% endif %}
   </div>
   {% endfor %}
 </section>
