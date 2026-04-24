@@ -1,4 +1,16 @@
+# Generated CV data and output
 /data/*.json
 !/data/example.json
 /output
+
+# Python caches and virtual environments
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
