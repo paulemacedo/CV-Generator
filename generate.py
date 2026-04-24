@@ -11,8 +11,9 @@ from __future__ import annotations
 # =============================================================================
 
 import json
-import os
 import sys
+import unicodedata
+import re
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +52,12 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent
 DATA_DIR = WORKSPACE_ROOT / "data"
 TEMPLATES_DIR = WORKSPACE_ROOT / "templates"
 OUTPUT_DIR = WORKSPACE_ROOT / "output"
+HTML_OUTPUT_DIR = OUTPUT_DIR / "html"
+
+LANGUAGE_CODE_MAP = {
+    "pt": "PT-BR",
+    "en": "EN-US",
+}
 
 
 def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
@@ -117,6 +124,31 @@ def normalize_language_value(value: Any, language: str) -> str:
     if value is None:
         return ""
     return str(value)
+
+
+def slugify_filename_part(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    ascii_value = normalized.encode("ascii", "ignore").decode("ascii")
+    cleaned = re.sub(r"[^A-Za-z0-9]+", "-", ascii_value).strip("-")
+    return re.sub(r"-+", "-", cleaned)
+
+
+def format_area_name(raw_stem: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9]+", " ", raw_stem).strip()
+    if not normalized:
+        return "Area"
+
+    tokens = normalized.split()
+    formatted_tokens = [token if token.isupper() else token.capitalize() for token in tokens]
+    return "-".join(formatted_tokens)
+
+
+def build_output_basename(profile: dict[str, Any], profile_path: Path, language: str) -> str:
+    localized_name = localize_text(profile.get("name", profile.get("nome", "")), language)
+    name_part = slugify_filename_part(localized_name) or "Sem-Nome"
+    area_part = slugify_filename_part(format_area_name(profile_path.stem)) or "Area"
+    language_part = LANGUAGE_CODE_MAP.get(language, language.upper())
+    return f"CV-{name_part}-{area_part}-{language_part}"
 
 
 def normalize_text_list(value: Any, language: str) -> list[str]:
@@ -306,10 +338,28 @@ def prepare_projects(profile: dict[str, Any], language: str) -> list[dict[str, A
             continue
 
         if isinstance(project, dict):
+            # subtitle pode ser dict de dicts (área -> {pt, en})
+            subtitle = project.get("subtitle", "")
+            if isinstance(subtitle, dict):
+                # Se for dict de áreas, tenta pegar a área "ti" ou a primeira disponível
+                area_key = None
+                if "ti" in subtitle:
+                    area_key = "ti"
+                elif len(subtitle) > 0:
+                    area_key = next(iter(subtitle))
+                if area_key and isinstance(subtitle[area_key], dict):
+                    subtitle_value = localize_map(subtitle[area_key], language)
+                elif area_key:
+                    subtitle_value = localize_map(subtitle[area_key], language)
+                else:
+                    subtitle_value = {"pt": "", "en": ""}
+            else:
+                subtitle_value = localize_map(subtitle, language)
+
             project_items.append(
                 {
                     "name": localize_map(project.get("name", ""), language),
-                    "subtitle": localize_map(project.get("subtitle", ""), language),
+                    "subtitle": subtitle_value,
                     "description": localize_map(project.get("description", ""), language),
                     "github": str(project.get("github", "")).strip(),
                     "areas": [str(area) for area in project.get("areas", []) if str(area).strip()],
@@ -390,6 +440,7 @@ def render_profile(
         certifications=prepare_certifications(profile, language),
         publications=prepare_publications(profile, language),
         labels=labels,
+        _meta=profile.get("_meta", {}),
     )
 
 
@@ -397,28 +448,28 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
     profile = load_json_file(profile_path)
     labels_by_language = profile.get("labels", DEFAULT_LABELS)
     environment = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
-    profile_name = profile_path.stem.lstrip("-_") or profile_path.stem
-
     filename = profile_path.stem.lower()
     prefix = filename.split("-")[0]
 
-    templates_to_use = ["Master"] if sys.prefix == "master" else template_names
+    templates_to_use = ["Master"] if prefix == "master" else template_names
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    HTML_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for template_name in templates_to_use:
         template = environment.get_template(f"{template_name}.html")
 
         for language in languages:
             html = render_profile(template, profile, language, labels_by_language[language])
+            output_basename = build_output_basename(profile, profile_path, language)
+            if len(templates_to_use) > 1:
+                output_basename = f"{output_basename}-{template_name.title()}"
 
-            output_directory = OUTPUT_DIR / profile_name / language / template_name
-            output_directory.mkdir(parents=True, exist_ok=True)
-
-            html_path = output_directory / "cv.html"
+            html_path = HTML_OUTPUT_DIR / f"{output_basename}.html"
             html_path.write_text(html, encoding="utf-8")
             print(f"CV gerado:  {html_path.relative_to(WORKSPACE_ROOT)}")
 
             if PDF_ENABLED:
-                pdf_path = output_directory / "cv.pdf"
+                pdf_path = OUTPUT_DIR / f"{output_basename}.pdf"
                 try:
                     generate_pdf(html_path, pdf_path)
                     print(f"PDF gerado: {pdf_path.relative_to(WORKSPACE_ROOT)}")

@@ -51,18 +51,22 @@ Certifique-se de ter o seguinte instalado em sua máquina:
    python generate.py
    ```
    - O script gera automaticamente todos os currículos para todos os idiomas e templates disponíveis, em formato HTML e PDF quando o Playwright estiver instalado.
-3. Os currículos gerados serão salvos no diretório `output/`, organizados por perfil, idioma e template:
+3. Os currículos gerados serão salvos no diretório `output/` com padrão pronto para envio:
+   - PDFs finais: `output/`
+   - HTMLs auxiliares (debug/ajuste visual): `output/html/`
+
+   Padrão de nome dos arquivos:
+   - `CV-Nome-Area-Idioma`
+   - Exemplo: `CV-Paule-Macedo-Security-PT-BR.pdf`
+
+   Estrutura atual:
    ```
    output/
-   └── <nome_do_arquivo_json>/
-      ├── en/
-      │   └── <template>/
-      │       ├── cv.html
-      │       └── cv.pdf
-      └── pt/
-         └── <template>/
-            ├── cv.html
-            └── cv.pdf
+   ├── CV-Paule-Macedo-Security-PT-BR.pdf
+   ├── CV-Paule-Macedo-Security-EN-US.pdf
+   └── html/
+      ├── CV-Paule-Macedo-Security-PT-BR.html
+      └── CV-Paule-Macedo-Security-EN-US.html
    ```
 
 ## Personalização

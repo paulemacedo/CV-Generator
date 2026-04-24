@@ -1,9 +1,103 @@
-/* Common styles for all templates */
-@page {
-  size: A4;
-  margin: 10mm 0mm; /* Ajusta margens para A4 com menos espaço lateral */
+/* =========================
+   RESET
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
+/* =========================
+   VARIABLES
+========================= */
+:root {
+  --text: #2c3e50;
+  --muted: #7f8c8d;
+  --primary: #2980b9;
+  --background: #ffffff;
+  --card: #ffffff;
+  --border: #e0e6ed;
+  --rule: #dfe6ee;
+}
+
+/* =========================
+   BASE
+========================= */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--background);
+  line-height: 1.5;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+h1, h2, h3 {
+  font-weight: 600;
+}
+
+h2 {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+
+/* =========================
+   COMPONENTS
+========================= */
+.section {
+  margin-bottom: 1rem;
+}
+
+.entry {
+  margin-bottom: 0.8rem;
+  padding-left: 8px;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.entry:hover {
+  border-left-color: var(--rule);
+}
+
+.label {
+  font-weight: 600;
+}
+
+.subtle {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* =========================
+   LINKS
+========================= */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   LISTS
+========================= */
+ul {
+  list-style: none;
+}
+
+li {
+  position: relative;
+}
+
+/* =========================
+   ICONS
+========================= */
 .icon {
   width: 14px;
   height: 14px;
@@ -12,29 +106,25 @@
   fill: currentColor;
 }
 
-/* Print-specific styles */
+/* =========================
+   PRINT
+========================= */
+@page {
+  size: A4;
+  margin: 10mm 0mm;
+}
+
 @media print {
-    a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    
-    .section:last-of-type {
-      margin-bottom: 0; /* Remove margem inferior da última seção */
-    }
-
-    .entry:last-of-type {
-      margin-bottom: 0; /* Remove margem inferior da última entrada */
-    }
-
-      .entry:hover {
-    border-left-color: var(--rule);
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 
-    /* Hide elements not needed for printing */
-    .no-print {
-        display: none;
-    }
-    
+  .entry:hover {
+    border-left-color: transparent;
+  }
+
+  .no-print {
+    display: none;
+  }
 }

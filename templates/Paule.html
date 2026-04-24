@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>{{ nome }} - CV</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../../templates/common.css">
-<link rel="stylesheet" href="../../../../templates/Paule.css">
+<link rel="stylesheet" href="../../templates/common.css">
+<link rel="stylesheet" href="../../templates/Paule.css">
 
 </head>
 <body>
@@ -150,18 +150,20 @@
       <span class="entry-date">{{ pub.date[lang] if pub.date is mapping else pub.date }}</span>
     </div>
     {% set pub_description = pub.description[lang] if pub.description is mapping else pub.description %}
-    {% if pub_description %}
+    {% if pub.details %}
+      <ul class="pub-list">
+        {% for bullet in pub.details %}
+        <li>{{ bullet[lang] if bullet is mapping else bullet }}</li>
+        {% endfor %}
+        {% if pub.doi %}
+        <li>DOI: <a href="{{ pub.doi_url }}" target="_blank" rel="noopener noreferrer">{{ pub.doi }}</a></li>
+        {% endif %}
+      </ul>
+    {% elif pub_description %}
       <div>{{ pub_description }}</div>
-    {% endif %}
-    {% if pub.details or pub.doi %}
-    <ul>
-      {% for bullet in pub.details %}
-      <li>{{ bullet[lang] if bullet is mapping else bullet }}</li>
-      {% endfor %}
       {% if pub.doi %}
-      <li>DOI: <a href="{{ pub.doi_url }}" target="_blank" rel="noopener noreferrer">{{ pub.doi }}</a></li>
+      <div>DOI: <a href="{{ pub.doi_url }}" target="_blank" rel="noopener noreferrer">{{ pub.doi }}</a></div>
       {% endif %}
-    </ul>
     {% endif %}
   </div>
   {% endfor %}

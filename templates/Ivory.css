@@ -1,38 +1,42 @@
+@import url("common.css");
+
+/* =========================
+   THEME (IVORY)
+========================= */
 :root {
-  --ink:     #1a1a1a;
-  --muted:   #7a7a7a;
-  --accent:  #b5904a;
-  --rule:    #d8d2c8;
-  --bg:      #faf9f7;
-  --card:    #ffffff;
+  --text: #1a1a1a;
+  --muted: #7a7a7a;
+  --primary: #b5904a;
+  --rule: #d8d2c8;
+  --background: #faf9f7;
+  --card: #ffffff;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* =========================
+   LAYOUT
+========================= */
 body {
   font-family: 'DM Sans', sans-serif;
   font-weight: 300;
-  color: var(--ink);
-  background: var(--bg);
-  max-width: 750px; /* Ajusta largura máxima para compensar margens do navegador */
+  max-width: 750px;
   margin: 0 auto;
-  padding: 40px 20px 20px; /* Ajusta padding para evitar excesso de espaço */
+  padding: 40px 20px 20px;
   line-height: 1.55;
   font-size: 13.5px;
+  background: var(--background);
+  color: var(--text);
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 header {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
   gap: 16px;
   padding-bottom: 24px;
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 2px solid var(--text);
   margin-bottom: 36px;
 }
 
@@ -42,7 +46,6 @@ h1 {
   font-weight: 600;
   letter-spacing: -0.5px;
   line-height: 1.1;
-  color: var(--ink);
 }
 
 .header-left {
@@ -69,39 +72,38 @@ h1 {
 }
 
 .contact span {
-    display: block; /* Força cada <span> a ocupar uma linha */
+  display: block;
 }
 
 .contact a {
   color: inherit;
-  text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .contact a:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
-/* SECTION */
+/* =========================
+   SECTION
+========================= */
 .section {
   margin-bottom: 32px;
-  page-break-inside: avoid; /* Evita que seções sejam cortadas */
+  page-break-inside: avoid;
 }
 
 .section:last-of-type {
-  margin-bottom: 0; /* Remove margem inferior da última seção */
-  page-break-after: auto; /* Remove quebra de página após a última seção */
+  margin-bottom: 0;
 }
 
 .section-title {
-  font-family: 'DM Sans', sans-serif;
   font-weight: 500;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 2.5px;
-  color: var(--accent);
+  color: var(--primary);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -115,7 +117,9 @@ h1 {
   background: var(--rule);
 }
 
-/* SKILLS */
+/* =========================
+   SKILLS
+========================= */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -129,7 +133,6 @@ h1 {
 
 .skill-core strong {
   font-weight: 500;
-  color: var(--ink);
   display: block;
   font-size: 11.5px;
   text-transform: uppercase;
@@ -141,7 +144,9 @@ h1 {
   color: var(--muted);
 }
 
-/* ENTRIES */
+/* =========================
+   ENTRIES
+========================= */
 .entry {
   margin-bottom: 18px;
   padding-left: 14px;
@@ -150,7 +155,7 @@ h1 {
 }
 
 .entry:hover {
-  border-left-color: var(--accent);
+  border-left-color: var(--primary);
 }
 
 .entry-header {
@@ -163,7 +168,6 @@ h1 {
 .entry-title {
   font-weight: 500;
   font-size: 14px;
-  color: var(--ink);
 }
 
 .entry-sub {
@@ -180,14 +184,14 @@ h1 {
   font-style: italic;
 }
 
+/* =========================
+   BULLETS
+========================= */
 ul {
   margin: 8px 0 0 0;
-  padding: 0;
-  list-style: none;
 }
 
 li {
-  position: relative;
   padding-left: 14px;
   margin-bottom: 4px;
   font-size: 13px;
@@ -199,14 +203,14 @@ li::before {
   content: '–';
   position: absolute;
   left: 0;
-  color: var(--accent);
-  font-weight: 400;
+  color: var(--primary);
 }
 
+/* =========================
+   PRINT FIXES
+========================= */
+.section:last-of-type,
+.entry:last-of-type,
 ul:last-of-type {
-  margin-bottom: 0; /* Remove margem inferior da última lista */
-}
-
-.entry:last-of-type {
-  margin-bottom: 0; /* Remove margem inferior da última entrada */
+  margin-bottom: 0;
 }

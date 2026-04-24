@@ -1,42 +1,45 @@
 @import url("common.css");
 
+/* =========================
+   THEME (PAULE)
+========================= */
 :root {
-  --ink:   #0f0f0f;
-  --blue:  #1155cc;
+  --text: #0f0f0f;
+  --primary: #1155cc;
   --muted: #666666;
-  --rule:  #cccccc;
+  --rule: #cccccc;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-
+/* =========================
+   LAYOUT
+========================= */
 body {
   font-family: 'Nunito', Arial, sans-serif;
   font-weight: 400;
-  color: var(--ink);
-  background: #fff;
-  max-width: 770px; /* Ajusta largura máxima para compensar margens do navegador */
+  max-width: 770px;
   margin: 0 auto;
-  padding: 20px 20px 20px; /* Ajusta padding para evitar excesso de espaço */
+  padding: 20px;
   font-size: 10px;
   line-height: 1.5;
+  background: var(--background);
+  color: var(--text);
 }
 
-/* ── HEADER ── */
-
+/* =========================
+   HEADER
+========================= */
 header {
   text-align: center;
   margin-bottom: 18px;
-  font-family: 'Spectral', serif; /* Alterado para a fonte Spectral */
+  font-family: 'Spectral', serif;
 }
 
 h1 {
-  font-family: 'Spectral', serif; /* Alterado para a fonte Spectral */
-  font-weight: 500; /* Ajustado para Medium */
+  font-family: 'Spectral', serif;
+  font-weight: 500;
   font-size: 26px;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: var(--ink);
   margin-bottom: 4px;
 }
 
@@ -49,12 +52,16 @@ h1 {
   font-size: 12px;
 }
 
-.contact a { color: var(--blue); text-decoration: none; }
-.contact a:hover { text-decoration: underline; }
+.contact a {
+  color: var(--primary);
+}
 
-/* ── SECTION ── */
-
-.section { margin-bottom: 16px; }
+/* =========================
+   SECTION
+========================= */
+.section {
+  margin-bottom: 16px;
+}
 
 .section-header {
   display: flex;
@@ -66,7 +73,7 @@ h1 {
 .section-title {
   font-weight: 700;
   font-size: 13px;
-  color: var(--blue);
+  color: var(--primary);
   white-space: nowrap;
 }
 
@@ -76,43 +83,62 @@ h1 {
   background: var(--rule);
 }
 
-/* ── SKILLS ── */
-
+/* =========================
+   SKILLS
+========================= */
 .skill-row {
   margin-bottom: 2px;
   font-size: 12px;
   line-height: 1.55;
 }
 
-.skill-row strong { font-weight: 700; }
+.skill-row strong {
+  font-weight: 700;
+}
 
-/* ── ENTRY ROW (experience / education / publication) ── */
-
-.entry { margin-bottom: 6px; }
+/* =========================
+   ENTRY (EXPERIENCE / EDUCATION)
+========================= */
+.entry {
+  margin-bottom: 6px;
+}
 
 .entry-row {
-  display:flex;
+  display: flex;
   align-items: baseline;
   gap: 20px;
   flex-wrap: wrap;
   margin-bottom: 3px;
 }
 
-.entry-role   { font-weight: 700; font-size: 13px; }
-.entry-company { font-weight: 700; font-size: 13px; }
-.entry-location { font-style: italic; color: var(--muted); font-size: 13px; flex: 1; }
-.entry-date   { font-weight: 700; font-size: 13px; white-space: nowrap; margin-left: auto; }
+.entry-role,
+.entry-company {
+  font-weight: 700;
+  font-size: 12px;
+}
 
-/* ── BULLETS ── */
+.entry-location {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 12px;
+  flex: 1;
+}
 
+.entry-date {
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* =========================
+   BULLETS
+========================= */
 ul {
   margin: 3px 0 6px 0;
-  padding: 0;
-  list-style: none;
 }
 
 li {
-  position: relative;
   padding-left: 16px;
   margin-bottom: 3px;
   font-size: 12px;
@@ -125,8 +151,17 @@ li::before {
   left: 2px;
 }
 
-li strong { font-weight: 700; }
-li em     { font-style: italic; }
+li strong {
+  font-weight: 700;
+}
 
-a { color: var(--blue); text-decoration: none; }
-a:hover { text-decoration: underline; }
+li em {
+  font-style: italic;
+}
+
+/* =========================
+   LINKS (override leve)
+========================= */
+a {
+  color: var(--primary);
+}
