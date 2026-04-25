@@ -4,6 +4,7 @@
 # CV input data
 /data/*.json
 !/data/example.json
+!/data/master-cv.json
 
 # Python cache and virtual environments
 __pycache__/

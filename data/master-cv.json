@@ -1,0 +1,558 @@
+{
+  "_meta": {
+    "description": "Master CV · Fonte dos dados para geração de currículos por vaga",
+    "version": "1.0.0",
+    "last_updated": "2026-04",
+    "usage": "Filtre por 'areas' e 'tags' para gerar JSONs de vagas específicas. Bullets têm tags independentes para granularidade fina."
+  },
+  "name": {
+    "pt": "John Doe",
+    "en": "John Doe"
+  },
+  "location": {
+    "pt": "São Paulo, SP — Brasil",
+    "en": "São Paulo, SP — Brazil"
+  },
+  "headline": {
+    "ti_general": {
+      "pt": "Estágio ou Júnior em TI",
+      "en": "Intern or Junior in IT"
+    },
+    "dev": {
+      "pt": "Estágio ou Júnior em Desenvolvimento Full-Stack",
+      "en": "Intern or Junior Full-Stack Developer"
+    },
+    "support": {
+      "pt": "Suporte Técnico e Manutenção de Hardware",
+      "en": "Technical Support & Hardware Maintenance"
+    },
+    "cybersecurity": {
+      "pt": "Estágio ou Júnior em Segurança da Informação",
+      "en": "Cybersecurity Intern or Junior Information Security Analyst"
+    }
+  },
+  "summary": {
+    "cybersecurity": {
+      "pt": "Estudante de Ciência da Computação com foco na intersecção entre desenvolvimento de software e segurança ofensiva. Mentalidade Security by Design: aplicações resilientes nascem de código bem estruturado e testado sob a ótica de um atacante. Atuou como pesquisador na Tecnolab no projeto FinShield, integrando protocolos de autenticação em sistemas multiplataforma e reduzindo 50% das vulnerabilidades críticas. Certificado em Fundamentos de Cibersegurança (80h). Proficiente em Inglês C1 Advanced.",
+      "en": "Computer Science student focused on the intersection of software development and offensive security. Security by Design mindset: resilient applications are born from well-structured code tested from an attacker's perspective. Worked as a researcher at Tecnolab on the FinShield project, integrating authentication protocols across multi-platform systems and reducing critical vulnerabilities by 50%. Certified in Cybersecurity Fundamentals (80h). C1 Advanced English proficiency."
+    },
+    "support": {
+      "pt": "Técnico de Suporte com experiência em manutenção de hardware e software. Capacidade de resolver problemas técnicos de forma eficiente, garantindo disponibilidade e desempenho dos sistemas. Proficiente em diagnóstico e resolução de falhas em ambientes corporativos.",
+      "en": "Support Technician with experience in hardware and software maintenance. Ability to resolve technical issues efficiently, ensuring system availability and performance. Proficient in diagnosing and resolving failures in corporate environments."
+    }
+  },
+  "contact": {
+    "email": "johndoe@example.com",
+    "phone": "+55 11 91234-5678",
+    "linkedin": "https://linkedin.com/in/johndoe",
+    "github": "https://github.com/johndoe",
+    "website": "https://johndoe.dev",
+    "portfolio": "https://johndoe.dev/portfolio"
+  },
+  "skills": [
+    {
+      "id": "security",
+      "label": { "pt": "Segurança e Normas", "en": "Security & Standards" },
+      "items": [
+        "Cybersecurity",
+        "Application Security (AppSec)",
+        "Red Team",
+        "OWASP Top 10",
+        "ISO 27001",
+        "LGPD",
+        "Hardening",
+        "JWT",
+        "bcrypt",
+        "CORS",
+        "RBAC"
+      ],
+      "areas": ["cybersecurity", "ti", "appsec"],
+      "priority": 1
+    },
+    {
+      "id": "offensive_tools",
+      "label": { "pt": "Ferramentas Ofensivas", "en": "Offensive Tools" },
+      "items": [
+        "Wireshark",
+        "Metasploit",
+        "Nmap",
+        "Burp Suite",
+        "TryHackMe",
+        "Hack The Box"
+      ],
+      "areas": ["cybersecurity", "redteam"],
+      "priority": 2
+    },
+    {
+      "id": "systems",
+      "label": { "pt": "Sistemas e Redes", "en": "Systems & Networking" },
+      "items": [
+        "Linux (Ubuntu/Debian)",
+        "Networking Fundamentals",
+        "TCP/IP",
+        "DNS",
+        "HTTP/HTTPS",
+        "REST APIs",
+        "Dual Boot",
+        "sysctl"
+      ],
+      "areas": ["cybersecurity", "ti", "appsec", "infra"],
+      "priority": 3
+    },
+    {
+      "id": "programming",
+      "label": { "pt": "Programação e Scripting", "en": "Programming & Scripting" },
+      "items": [
+        "Python",
+        "Bash / Shell Script",
+        "JavaScript",
+        "Java",
+        "SQL",
+        "C#"
+      ],
+      "areas": ["ti", "cybersecurity", "appsec", "dev"],
+      "priority": 4
+    },
+    {
+      "id": "webdev",
+      "label": { "pt": "Desenvolvimento Web", "en": "Web Development" },
+      "items": [
+        "Node.js",
+        "React",
+        "Redux",
+        "Tailwind CSS",
+        "HTML5",
+        "Responsive Design",
+        "Swagger / OpenAPI"
+      ],
+      "areas": ["ti", "dev", "appsec"],
+      "priority": 5
+    },
+    {
+      "id": "tools",
+      "label": { "pt": "Ferramentas e Fluxo de Trabalho", "en": "Tools & Workflow" },
+      "items": [
+        "Git",
+        "Insomnia",
+        "Debugging",
+        "Troubleshooting"
+      ],
+      "areas": ["ti", "cybersecurity", "dev"],
+      "priority": 6
+    },
+    {
+      "id": "hardware",
+      "label": { "pt": "Hardware e Manutenção", "en": "Hardware & Maintenance" },
+      "items": [
+        "Diagnóstico de Smartphones",
+        "Substituição de Componentes",
+        "Estação de Solda e Retrabalho",
+        "Recuperação de Dados"
+      ],
+      "areas": ["hardware", "manutencao"],
+      "priority": 7
+    },
+    {
+      "id": "audiovisual",
+      "label": { "pt": "Audiovisual e Produção", "en": "Audiovisual & Production" },
+      "items": [
+        "Filmagem",
+        "Captação de Vídeo",
+        "Cobertura de Eventos",
+        "Edição de Vídeo"
+      ],
+      "areas": ["audiovisual", "producao"],
+      "priority": 8
+    },
+    {
+      "id": "languages",
+      "label": { "pt": "Idiomas", "en": "Languages" },
+      "items_pt": [
+        "Inglês (C1 – Avançado)",
+        "Espanhol (Elementar)",
+        "Português (Nativo)"
+      ],
+      "items_en": [
+        "English (C1 – Advanced)",
+        "Spanish (Elementary)",
+        "Portuguese (Native)"
+      ],
+      "areas": ["all"],
+      "priority": 9
+    }
+  ],
+
+  "experience": [
+    {
+      "id": "tecnolab",
+      "role": {
+        "pt": "Engenheiro de Software (Iniciação Científica)",
+        "en": "Software Engineer (Undergraduate Researcher)"
+      },
+      "company": "Tecnolab",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "start": "2023-07",
+        "end": "2024-09",
+        "pt": "Jul 2023 – Set 2024",
+        "en": "Jul 2023 – Sep 2024"
+      },
+      "areas": ["ti", "cybersecurity", "appsec", "pesquisa", "infra"],
+      "bullets": [
+        {
+          "id": "tecnolab_ports",
+          "tags": ["ti", "infra", "sistemas"],
+          "pt": "Universalizei a seleção de portas de rede no middleware FinShield, permitindo conexão estável em ambientes Windows, Linux e macOS, eliminando dependência de hardware específico e viabilizando demonstrações em 4+ eventos nacionais.",
+          "en": "Universalized network port selection in the FinShield middleware to support Windows, Linux, and macOS, eliminating hardware-specific dependencies and enabling demonstrations at 4+ national tech events."
+        },
+        {
+          "id": "tecnolab_ports_cyber",
+          "tags": ["cybersecurity", "redes"],
+          "pt": "Universalizei a seleção de portas de rede no middleware FinShield, garantindo conexão estável em ambientes Windows, Linux e macOS. Esta ação eliminou a dependência de hardware específico e viabilizou a apresentação do projeto em 4+ feiras nacionais.",
+          "en": "Universalized network port selection in the FinShield middleware to ensure stable connections across Windows, Linux, and macOS environments, eliminating hardware-specific dependencies and enabling demonstrations at 4+ national tech fairs."
+        },
+        {
+          "id": "tecnolab_templates",
+          "tags": ["ti", "webdev"],
+          "pt": "Criei templates para telas de dashboard em HTML/CSS/JavaScript utilizados em 4+ eventos nacionais, facilitando a interação de 200+ visitantes durante demonstrações.",
+          "en": "Developed dashboard templates in HTML/CSS/JavaScript deployed at 4+ national events, streamlining interaction for 200+ visitors during live demos."
+        },
+        {
+          "id": "tecnolab_api",
+          "tags": ["cybersecurity", "appsec", "api"],
+          "pt": "Validei a comunicação via Insomnia/APIs REST entre o middleware e dispositivos clientes, garantindo a integridade da integração e a estabilidade do fluxo de dados.",
+          "en": "Validated communication via Insomnia/REST APIs between middleware and client devices, ensuring integration integrity and data flow stability."
+        },
+        {
+          "id": "tecnolab_dualboot",
+          "tags": ["ti", "cybersecurity", "infra", "linux"],
+          "pt": "Implementei dual boot (Ubuntu/Windows) em 3+ notebooks e assegurei a continuidade operacional, resultando na redução de 60% em falhas críticas durante demonstrações técnicas ao vivo.",
+          "en": "Implemented dual-boot (Ubuntu/Windows) configurations on 3+ laptops and ensured operational continuity, resulting in a 60% reduction in critical failures during live technical demonstrations."
+        },
+        {
+          "id": "tecnolab_pesquisa",
+          "tags": ["pesquisa", "publicacao"],
+          "pt": "Investigação de interoperabilidade e comunicação entre dispositivos conectados, com foco em arquitetura de sistemas distribuídos. Resultados publicados na conferência TechBR.",
+          "en": "Investigated interoperability and communication between connected devices, focusing on distributed systems architecture. Results published at TechBR conference."
+        }
+      ]
+    },
+    {
+      "id": "fixmobile",
+      "role": {
+        "pt": "Técnico em Manutenção de Dispositivos Móveis",
+        "en": "Mobile Device Repair Technician"
+      },
+      "company": "FixMobile",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "start": "2023-01",
+        "end": null,
+        "pt": "Jan 2023 – Presente",
+        "en": "Jan 2023 – Present"
+      },
+      "areas": ["hardware", "manutencao", "atendimento"],
+      "bullets": [
+        {
+          "id": "fixmobile_diag",
+          "tags": ["hardware", "diagnostico"],
+          "pt": "Diagnóstico lógico e físico de smartphones e dispositivos móveis, garantindo a integridade dos componentes internos e a continuidade operacional dos aparelhos.",
+          "en": "Performed logical and physical diagnosis of smartphones and mobile devices, ensuring internal component integrity and device operational continuity."
+        },
+        {
+          "id": "fixmobile_hardware",
+          "tags": ["hardware", "solda"],
+          "pt": "Substituição de componentes críticos (telas, conectores e baterias) e uso de estação de solda e retrabalho para reparos de alta precisão em placas de circuito.",
+          "en": "Replaced critical components (screens, connectors, and batteries) and used soldering and rework stations for high-precision circuit board repairs."
+        },
+        {
+          "id": "fixmobile_dados",
+          "tags": ["hardware", "cybersecurity", "dados"],
+          "pt": "Aplicação de boas práticas de manuseio de hardware sensível e suporte técnico focado na recuperação e segurança de dados em dispositivos comprometidos.",
+          "en": "Applied best practices for handling sensitive hardware and provided technical support focused on data recovery and security in compromised devices."
+        },
+        {
+          "id": "fixmobile_gestao",
+          "tags": ["autonomo", "gestao"],
+          "pt": "Responsável pelo fluxo completo de atendimento técnico, gestão de serviços e controle de qualidade como profissional autônomo.",
+          "en": "Managed the complete technical service workflow, service management, and quality control as an independent professional."
+        }
+      ]
+    },
+    {
+      "id": "eventpro",
+      "role": {
+        "pt": "Cinegrafista",
+        "en": "Videographer"
+      },
+      "company": "EventPro",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "start": null,
+        "end": null,
+        "pt": "A confirmar",
+        "en": "To confirm",
+        "_note": "Preencha as datas exatas"
+      },
+      "areas": ["audiovisual", "producao", "institucional"],
+      "bullets": [
+        {
+          "id": "eventpro_filmagem",
+          "tags": ["audiovisual", "eventos"],
+          "pt": "Cobertura audiovisual de eventos e atividades institucionais, garantindo registro de qualidade para fins de comunicação e documentação.",
+          "en": "Audiovisual coverage of institutional events and activities, ensuring quality recording for communication and documentation purposes."
+        }
+      ],
+      "_note": "Adicione mais bullets conforme lembrar: equipamentos usados, tipo de edição, volume de eventos, etc."
+    }
+  ],
+
+  "education": [
+    {
+      "id": "unimetro",
+      "degree": {
+        "pt": "Bacharelado em Ciência da Computação",
+        "en": "Bachelor of Science in Computer Science"
+      },
+      "institution": "UniMetro",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "start": "2026-02",
+        "end": "2027-12",
+        "pt": "Fev 2026 – Previsto Dez 2027",
+        "en": "Feb 2026 – Expected Dec 2027"
+      },
+      "details": { "pt": [], "en": [] }
+    },
+    {
+      "id": "fatec",
+      "degree": {
+        "pt": "Tecnólogo em Análise e Desenvolvimento de Sistemas",
+        "en": "Associate Degree in Systems Analysis and Development"
+      },
+      "institution": "FATEC São Paulo",
+      "location": "São Paulo, SP, BR",
+      "date": {
+        "start": "2019",
+        "end": "2025",
+        "pt": "2019 – 2025",
+        "en": "2019 – 2025"
+      },
+      "details": {
+        "pt": ["Disciplinas relevantes: Matemática Aplicada, Algoritmos e Estruturas de Dados, Programação Orientada a Objetos, Sistemas Operacionais, Redes de Computadores, Engenharia de Software, Sistemas de Banco de Dados, Desenvolvimento Web, Arquitetura de Computadores, Lógica Matemática."],
+        "en": ["Relevant coursework: Applied Mathematics, Algorithms & Data Structures, Object-Oriented Programming, Operating Systems, Computer Networks, Software Engineering, Database Systems, Web Development, Computer Architecture, Mathematical Logic."]
+      }
+    }
+  ],
+
+  "certifications": [
+    {
+      "id": "escola_idiomas",
+      "name": {
+        "pt": "Língua Inglesa",
+        "en": "English Language"
+      },
+      "issuer": "Escola de Idiomas XYZ",
+      "date": {
+        "start": "2016",
+        "end": "2021",
+        "pt": "2016 – 2021",
+        "en": "2016 – 2021"
+      },
+      "details": { "pt": [], "en": [] }
+    },
+    {
+      "id": "cyber_fundamentals",
+      "name": {
+        "pt": "Fundamentos de Cibersegurança",
+        "en": "Cybersecurity Fundamentals"
+      },
+      "issuer": "SecureAcademy — SENAI & EscolaNet",
+      "hours": 80,
+      "date": "2024-02",
+      "areas": ["cybersecurity", "ti"],
+      "priority": 1
+    },
+    {
+      "id": "lgpd",
+      "name": {
+        "pt": "Lei Geral de Proteção de Dados (LGPD)",
+        "en": "Brazilian General Data Protection Law (LGPD)"
+      },
+      "issuer": "Instituto de Educação Digital",
+      "hours": 2,
+      "date": null,
+      "areas": ["cybersecurity", "ti", "compliance"],
+      "priority": 2
+    },
+    {
+      "id": "english_b1",
+      "name": {
+        "pt": "Certificado de Proficiência em Inglês B1 (Intermediário)",
+        "en": "Certificate of English Language Proficiency B1 (Intermediate)"
+      },
+      "issuer": "Global Language Assessment",
+      "date": "2021-02",
+      "areas": ["all"],
+      "priority": 3
+    },
+    {
+      "id": "english_c1",
+      "name": {
+        "pt": "Certificado de Proficiência em Inglês C1 (Avançado)",
+        "en": "Certificate of English Language Proficiency C1 (Advanced)"
+      },
+      "issuer": "EF SET — Reading & Listening",
+      "score": "63/100",
+      "date": "2024-05",
+      "areas": ["all"],
+      "priority": 4
+    },
+    {
+      "id": "python_bootcamp",
+      "name": {
+        "pt": "Python AI Backend Developer",
+        "en": "Python AI Backend Developer"
+      },
+      "issuer": "CodePath",
+      "date": null,
+      "url": "https://codepath.example.com/bootcamp/python-ai",
+      "areas": ["ti", "dev", "python"],
+      "priority": 5,
+      "_note": "Confirmar se concluído e adicionar data"
+    }
+  ],
+
+  "projects": [
+    {
+      "id": "sysforge",
+      "name": "SysForge",
+      "subtitle": {
+        "ti": {
+          "pt": "Automação de Sistemas Linux (Bash)",
+          "en": "Linux Systems Automation (Bash)"
+        },
+        "cybersecurity": {
+          "pt": "Automação e Security Engineering (Bash)",
+          "en": "Automation & Security Engineering (Bash)"
+        }
+      },
+      "github": "https://github.com/johndoe/sysforge",
+      "areas": ["ti", "cybersecurity", "linux", "infra"],
+      "description": {
+        "ti": {
+          "pt": "Ferramenta em Bash para automatizar configurações de sistemas Linux com dotfiles e gerenciadores de pacotes.",
+          "en": "Bash tool for automating Linux system setups with dotfiles and package managers."
+        },
+        "cybersecurity": {
+          "pt": "Script modular para provisionamento seguro de sistemas Linux com detecção automática de gerenciadores de pacotes (APT, DNF, Pacman). Automatiza hardening via sysctl, gerenciamento de logs e backups, e inclui módulos para instalação de ferramentas como Burp Suite.",
+          "en": "Modular script for secure Linux system provisioning with automatic package manager detection (APT, DNF, Pacman). Automates hardening via sysctl, log and backup management, and includes modules for security tools installation such as Burp Suite."
+        }
+      }
+    },
+    {
+      "id": "tastelab",
+      "name": "TasteLab",
+      "subtitle": {
+        "ti": {
+          "pt": "Aplicação Full-stack (React, Node.js, MongoDB)",
+          "en": "Full-stack Application (React, Node.js, MongoDB)"
+        },
+        "cybersecurity": {
+          "pt": "Full-stack Web Security (React, Node.js, MongoDB)",
+          "en": "Full-stack Web Security (React, Node.js, MongoDB)"
+        }
+      },
+      "github": "https://github.com/johndoe/tastelab",
+      "areas": ["ti", "cybersecurity", "appsec", "dev", "webdev"],
+      "description": {
+        "ti": {
+          "pt": "Aplicação Full-stack para personalização e pedido de refeições, desenvolvida com React, Redux, MongoDB e Node.js.",
+          "en": "Full-stack app for customizing and ordering meals. React, Redux, MongoDB, Node.js."
+        },
+        "cybersecurity": {
+          "pt": "Aplicação focada em controles de segurança críticos: autenticação JWT com expiração controlada, hashing com bcrypt e controle de acesso baseado em funções (RBAC). Documentação via Swagger/OpenAPI e políticas de CORS para consumo seguro de APIs.",
+          "en": "Application focused on implementing critical security controls: JWT authentication with controlled expiration, password hashing with bcrypt, and role-based access control (RBAC). Swagger/OpenAPI documentation and CORS policies for secure API consumption."
+        }
+      }
+    },
+    {
+      "id": "drone_sim",
+      "name": "DroneSim",
+      "subtitle": {
+        "ti": {
+          "pt": "Simulação de Algoritmos para Drones (Python)",
+          "en": "Drone Algorithm Simulation (Python)"
+        }
+      },
+      "github": null,
+      "areas": ["ti", "pesquisa", "algoritmos"],
+      "description": {
+        "ti": {
+          "pt": "Simulação em Python comparando algoritmos Dijkstra 2D vs 3D para drones, analisando métricas de consumo de energia e eficiência de tempo.",
+          "en": "Python simulation of 2D vs 3D Dijkstra pathfinding for drones with energy consumption and time efficiency metrics."
+        }
+      }
+    },
+    {
+      "id": "cv_generator",
+      "name": "CV Generator",
+      "subtitle": {
+        "ti": {
+          "pt": "Gerador de Currículos (Python, JSON)",
+          "en": "Resume Generator (Python, JSON)"
+        }
+      },
+      "github": "https://github.com/johndoe/cv-generator",
+      "areas": ["ti", "pesquisa", "desenvolvimento"],
+      "description": {
+        "ti": {
+          "pt": "Ferramenta em Python para gerar currículos profissionais a partir de dados em formato JSON, com suporte a múltiplos idiomas e estilos.",
+          "en": "Python tool for generating professional resumes from JSON data, with support for multiple languages and styles."
+        }
+      }
+    }
+  ],
+
+  "publications": [
+    {
+      "id": "techbr_2023",
+      "title": {
+        "pt": "FinShield: Uma Extensão de Web Services para Suporte Multiplataforma em Sistemas Financeiros",
+        "en": "FinShield: A Web Services Extension for Multi-Platform Support in Financial Systems"
+      },
+      "venue": "TechBR Conference",
+      "date": {
+        "pt": "Out 2023",
+        "en": "Oct 2023"
+      },
+      "doi": "10.5753/techbr.2023.123456",
+      "doi_url": "https://doi.org/10.5753/techbr.2023.123456",
+      "role": { "pt": "Coautor", "en": "Co-author" },
+      "areas": ["ti", "cybersecurity", "pesquisa"],
+      "description": {
+        "pt": "Coautor de artigo técnico sobre extensão de web services para suporte multiplataforma em sistemas financeiros. Investigação de interoperabilidade e comunicação entre dispositivos conectados, com foco em arquitetura de sistemas distribuídos.",
+        "en": "Co-authored technical article on web services extension for multi-platform support in financial systems. Investigation of interoperability and communication between connected devices, focusing on distributed systems architecture."
+      }
+    }
+  ],
+
+  "labels": {
+    "pt": {
+      "skills": "Competências",
+      "experience": "Experiência Profissional",
+      "education": "Formação Acadêmica",
+      "projects": "Projetos",
+      "certifications": "Formação Complementar",
+      "publications": "Publicações"
+    },
+    "en": {
+      "skills": "Skills",
+      "experience": "Experience",
+      "education": "Education",
+      "projects": "Projects",
+      "certifications": "Certifications & Training",
+      "publications": "Publications"
+    }
+  }
+}
