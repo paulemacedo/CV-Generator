@@ -46,7 +46,9 @@
                 <li>
                     <span class="label">{{ skill.label[lang] }}</span>:
                     {{ skill["items"]|join(', ') }}
-                    {% if skill.areas %}<span class="subtle">[{{ skill.areas|join(', ') }}]</span>{% endif %}
+                    {% if skill.areas %}
+                        <span class="subtle-area">{{ skill.areas|join(', ') }}</span>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
@@ -54,9 +56,16 @@
     <div class="section">
         <h2>{{ labels.experience }}</h2>
         {% for exp in experience %}
-            <div style="margin-bottom:1em;">
-                <span class="label">{{ exp.role[lang] }}</span> — {{ exp.company }}<br>
-                <span class="subtle">{{ exp.location }} | {{ exp.date[lang] }}</span>
+            <div style="margin-bottom: 1.5em;">
+                <div class="entry-header" style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <span class="label">{{ exp.role[lang] }} — {{ exp.company }}</span>
+                    <span class="subtle">{{ exp.date[lang] }}</span>
+                </div>
+                
+                <div class="subtle" style="margin-top: -2px; margin-bottom: 8px;">
+                    {{ exp.location }}
+                </div>
+
                 <ul class="item-list">
                     {% for bullet in exp.bullets %}
                         <li>{{ bullet[lang] if bullet[lang] is defined else bullet }}</li>

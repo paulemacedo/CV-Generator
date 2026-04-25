@@ -50,8 +50,17 @@ Certifique-se de ter o seguinte instalado em sua máquina:
    ```bash
    python generate.py
    ```
-   - O script gera automaticamente todos os currículos para todos os idiomas e templates disponíveis, em formato HTML e PDF quando o Playwright estiver instalado.
-3. Os currículos gerados serão salvos no diretório `output/` com padrão pronto para envio:
+   - O script detecta automaticamente os idiomas disponíveis (`pt`/`en`) em cada arquivo JSON e gera somente esses idiomas por perfil.
+   - JSONs híbridos (parte bilíngue + parte monolíngue) continuam funcionando: campos sem tradução explícita são reaproveitados no idioma em geração.
+   - JSONs monolíngues também são suportados.
+3. Opcionalmente, solicite idioma/template pela linha de comando:
+   ```bash
+   python generate.py en
+   python generate.py pt ivory
+   python generate.py all all
+   ```
+   - Se um idioma for solicitado mas não existir naquele perfil, o script avisa e ignora esse idioma apenas para o perfil afetado.
+4. Os currículos gerados serão salvos no diretório `output/` com padrão pronto para envio:
    - PDFs finais: `output/`
    - HTMLs auxiliares (debug/ajuste visual): `output/html/`
 

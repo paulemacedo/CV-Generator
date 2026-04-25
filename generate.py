@@ -60,8 +60,9 @@ LANGUAGE_CODE_MAP = {
 }
 
 
-def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
-    languages = AVAILABLE_LANGUAGES if not arguments or arguments[0] == "all" else [arguments[0]]
+def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str], bool]:
+    explicit_language_request = bool(arguments) and arguments[0] != "all"
+    requested_languages = AVAILABLE_LANGUAGES if not arguments or arguments[0] == "all" else [arguments[0]]
 
     if len(arguments) > 1:
         selected_templates = AVAILABLE_TEMPLATES if arguments[1] == "all" else [arguments[1]]
@@ -76,7 +77,7 @@ def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
         )
         sys.exit(1)
 
-    invalid_languages = [language for language in languages if language not in AVAILABLE_LANGUAGES]
+    invalid_languages = [language for language in requested_languages if language not in AVAILABLE_LANGUAGES]
     if invalid_languages:
         print(
             f"Language(s) not found: {', '.join(invalid_languages)}. "
@@ -84,7 +85,7 @@ def parse_cli_arguments(arguments: list[str]) -> tuple[list[str], list[str]]:
         )
         sys.exit(1)
 
-    return languages, selected_templates
+    return requested_languages, selected_templates, explicit_language_request
 
 
 try:
@@ -205,6 +206,90 @@ def localize_map(value: Any, language: str) -> dict[str, str]:
 
     localized_value = localize_text(value, language)
     return {"pt": localized_value, "en": localized_value}
+
+
+def has_meaningful_content(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, list):
+        return any(has_meaningful_content(item) for item in value)
+    if isinstance(value, dict):
+        return any(has_meaningful_content(item) for item in value.values())
+    return True
+
+
+def detect_profile_languages(profile: dict[str, Any]) -> list[str]:
+    detected_languages: set[str] = set()
+
+    meta = profile.get("_meta", {})
+    if isinstance(meta, dict):
+        raw_meta_languages = meta.get("languages", meta.get("language"))
+        if isinstance(raw_meta_languages, str):
+            raw_meta_languages = [raw_meta_languages]
+        if isinstance(raw_meta_languages, list):
+            for language_value in raw_meta_languages:
+                normalized_language = str(language_value).strip().lower()
+                if normalized_language in AVAILABLE_LANGUAGES:
+                    detected_languages.add(normalized_language)
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            for language in AVAILABLE_LANGUAGES:
+                localized_value = value.get(language)
+                if has_meaningful_content(localized_value):
+                    detected_languages.add(language)
+
+            for nested_value in value.values():
+                walk(nested_value)
+            return
+
+        if isinstance(value, list):
+            for nested_value in value:
+                walk(nested_value)
+
+    walk(profile)
+    return [language for language in AVAILABLE_LANGUAGES if language in detected_languages]
+
+
+def resolve_profile_languages(
+    profile: dict[str, Any],
+    profile_path: Path,
+    requested_languages: list[str],
+    explicit_language_request: bool,
+) -> list[str]:
+    detected_languages = detect_profile_languages(profile)
+
+    if not detected_languages:
+        if explicit_language_request:
+            detected_languages = list(requested_languages)
+        else:
+            detected_languages = list(AVAILABLE_LANGUAGES)
+        print(
+            f"⚠️  {profile_path.name}: no explicit language markers found; "
+            f"using {', '.join(detected_languages)}."
+        )
+
+    if explicit_language_request:
+        ignored_languages = [language for language in requested_languages if language not in detected_languages]
+        for ignored_language in ignored_languages:
+            print(
+                f"⚠️  {profile_path.name}: requested language '{ignored_language}' "
+                "was ignored (not detected in this profile)."
+            )
+        return [language for language in requested_languages if language in detected_languages]
+
+    return detected_languages
+
+
+def get_labels_for_language(labels_by_language: Any, language: str) -> dict[str, str]:
+    if isinstance(labels_by_language, dict):
+        localized_labels = labels_by_language.get(language)
+        if isinstance(localized_labels, dict):
+            return {str(key): str(value) for key, value in localized_labels.items()}
+
+    return dict(DEFAULT_LABELS[language])
 
 
 def prepare_contact(profile: dict[str, Any]) -> dict[str, str]:
@@ -444,12 +529,27 @@ def render_profile(
     )
 
 
-def generate_cv_files(profile_path: Path, languages: list[str], template_names: list[str]) -> None:
+def generate_cv_files(
+    profile_path: Path,
+    requested_languages: list[str],
+    template_names: list[str],
+    explicit_language_request: bool,
+) -> None:
     profile = load_json_file(profile_path)
     labels_by_language = profile.get("labels", DEFAULT_LABELS)
     environment = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
     filename = profile_path.stem.lower()
     prefix = filename.split("-")[0]
+    profile_languages = resolve_profile_languages(
+        profile,
+        profile_path,
+        requested_languages,
+        explicit_language_request,
+    )
+
+    if not profile_languages:
+        print(f"⚠️  {profile_path.name}: no languages to generate after filtering.")
+        return
 
     templates_to_use = ["Master"] if prefix == "master" else template_names
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -458,8 +558,9 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
     for template_name in templates_to_use:
         template = environment.get_template(f"{template_name}.html")
 
-        for language in languages:
-            html = render_profile(template, profile, language, labels_by_language[language])
+        for language in profile_languages:
+            labels = get_labels_for_language(labels_by_language, language)
+            html = render_profile(template, profile, language, labels)
             output_basename = build_output_basename(profile, profile_path, language)
             if len(templates_to_use) > 1:
                 output_basename = f"{output_basename}-{template_name.title()}"
@@ -478,7 +579,7 @@ def generate_cv_files(profile_path: Path, languages: list[str], template_names: 
 
 
 def main() -> None:
-    languages, template_names = parse_cli_arguments(sys.argv[1:])
+    requested_languages, template_names, explicit_language_request = parse_cli_arguments(sys.argv[1:])
     data_files = sorted(DATA_DIR.glob("*.json"))
 
     if not data_files:
@@ -486,7 +587,7 @@ def main() -> None:
         sys.exit(1)
 
     for profile_path in data_files:
-        generate_cv_files(profile_path, languages, template_names)
+        generate_cv_files(profile_path, requested_languages, template_names, explicit_language_request)
 
 
 if __name__ == "__main__":

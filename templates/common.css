@@ -115,15 +115,23 @@ li {
 }
 
 @media print {
+  body {
+    background: white;
+  }
+ 
   a {
     text-decoration: none;
     color: inherit;
   }
-
+ 
   .entry:hover {
     border-left-color: transparent;
   }
-
+ 
+  .section {
+    page-break-inside: avoid;
+  }
+ 
   .no-print {
     display: none;
   }

@@ -7,8 +7,8 @@
   },
 
   "headline": {
-    "pt": "Disponível para Oportunidades Remotas",
-    "en": "Open to Remote Opportunities"
+    "pt": "Estagio em Desenvolvimento de Software",
+    "en": "Software Development Intern"
   },
 
   "contact": {
@@ -40,20 +40,6 @@
 
   "skills": [
     {
-      "id": "security",
-      "label": {
-        "pt": "Segurança e Normas",
-        "en": "Security & Standards"
-      },
-      "items": [
-        "Cybersecurity",
-        "Application Security",
-        "ISO 27001",
-        "GDPR"
-      ],
-      "priority": 1
-    },
-    {
       "id": "systems",
       "label": {
         "pt": "Sistemas e Redes",
@@ -61,9 +47,7 @@
       },
       "items": [
         "Linux",
-        "Networking Fundamentals",
-        "TCP/IP",
-        "DNS"
+        "Networking Fundamentals"
       ],
       "priority": 2
     },
